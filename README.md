@@ -6,4 +6,6 @@ Frontend: React
 
 Database: Render PostgreSQL
 
-Host: Render Web service
+Backend Host: Render Web service
+
+Frontend Host: GitHub pages or Render Static sites
