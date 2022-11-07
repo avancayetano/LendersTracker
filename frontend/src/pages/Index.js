@@ -1,17 +1,17 @@
 import { useState } from "react";
 
-import SignInForm from "../components/SignInForm";
-import SignUpForm from "../components/SignUpForm";
+import LogInForm from "../components/LogInForm";
+import RegisterForm from "../components/RegisterForm";
 
 function IndexPage(props) {
-  const [formType, setFormType] = useState("sign-in");
+  const [formType, setFormType] = useState("login");
 
   return (
     <div>
-      {formType === "sign-in" ? (
-        <SignInForm setFormType={setFormType} />
+      {formType === "login" ? (
+        <LogInForm setFormType={setFormType} />
       ) : (
-        <SignUpForm setFormType={setFormType} />
+        <RegisterForm setFormType={setFormType} />
       )}
     </div>
   );

@@ -1,25 +1,27 @@
-import { useRef } from "react";
+import { useContext, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Form from "./ui/Form";
 import classes from "./ui/Form.module.css";
+import UserAuthContext from "../context/user-auth-context";
 
-function SignUpForm(props) {
-  const fullnameInputRef = useRef();
+function LogInForm(props) {
+  const userAuthContext = useContext(UserAuthContext);
+
+  const navigate = useNavigate();
+
   const usernameInputRef = useRef();
   const passwordInputRef = useRef();
-  const confirmPasswordRef = useRef();
 
   function submitHandler(event) {
     event.preventDefault();
 
-    var content = {
-      fullname: fullnameInputRef.current.value,
+    const content = {
       username: usernameInputRef.current.value,
       password: passwordInputRef.current.value,
-      confirmPassword: confirmPasswordRef.current.value,
     };
 
-    fetch("/api/sign-up", {
+    fetch("/api/login-user", {
       method: "POST",
       body: JSON.stringify(content),
       headers: {
@@ -28,17 +30,17 @@ function SignUpForm(props) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        if (data.status === "OK") {
+          navigate("/dashboard");
+        } else {
+          alert("Unauthorized.");
+        }
       });
   }
 
   return (
-    <Form title="Sign Up">
+    <Form title="Log In">
       <form className={classes.form} onSubmit={submitHandler}>
-        <div className={classes.field}>
-          <label htmlFor="fullname">Full Name</label>
-          <input type="text" required id="fullname" ref={fullnameInputRef} />
-        </div>
         <div className={classes.field}>
           <label htmlFor="username">Username</label>
           <input type="text" required id="username" ref={usernameInputRef} />
@@ -52,31 +54,22 @@ function SignUpForm(props) {
             ref={passwordInputRef}
           />
         </div>
-        <div className={classes.field}>
-          <label htmlFor="confirm-password">Confirm Password</label>
-          <input
-            type="password"
-            required
-            id="confirm-password"
-            ref={confirmPasswordRef}
-          />
-        </div>
         <div>
-          <button className="btn btn-primary">Sign Up</button>
+          <button className="btn btn-primary">Log In</button>
         </div>
       </form>
       <hr />
       <div>
-        <span>Already have an account? </span>
+        <span>Don't have an account yet? </span>
         <button
           className="btn btn-secondary"
-          onClick={() => props.setFormType("sign-in")}
+          onClick={() => props.setFormType("register")}
         >
-          Sign In Instead.
+          Register instead.
         </button>
       </div>
     </Form>
   );
 }
 
-export default SignUpForm;
+export default LogInForm;
