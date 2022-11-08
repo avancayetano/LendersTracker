@@ -1,13 +1,11 @@
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
 
 import UserAuthContext from "../context/user-auth-context";
 
-function DashboardPage(props) {
-  const navigate = useNavigate();
+function LogOutButton() {
   const userAuthContext = useContext(UserAuthContext);
 
-  function logout(event) {
+  function logOutHandler(event) {
     event.preventDefault();
     fetch("/api/logout-user", {
       method: "POST",
@@ -15,6 +13,7 @@ function DashboardPage(props) {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "OK") {
+          userAuthContext.resetProfile();
           navigate("/");
         } else {
           alert("Some error occurred.");
@@ -24,13 +23,9 @@ function DashboardPage(props) {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <h2>Hello, {userAuthContext.fullname}.</h2>
-      <button className="btn btn-primary" onClick={logout}>
-        Log out
-      </button>
+      <button onClick={logOutHandler}>Log Out</button>
     </div>
   );
 }
 
-export default DashboardPage;
+export default LogOutButton;

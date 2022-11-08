@@ -1,11 +1,11 @@
-from test_models import db
+from dummy_models import db
 
-class ApplicationConfig:
+class AppConfig:
     SECRET_KEY = "SADSKAkfedsmfkjsfggsdmvffksdk"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
-    SQLALCHEMY_DATABASE_URI = r"sqlite:///./db.sqlite"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///./db.sqlite"
 
     SESSION_TYPE = "sqlalchemy"
     SESSION_PERMANENT = True

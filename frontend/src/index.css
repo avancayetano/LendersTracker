@@ -1,12 +1,9 @@
 :root {
-  --primary: #6d9886;
-  --secondary: #f2e7d5;
-
   --light: #f7f7f7;
   --dark: #393e46;
 
   --success: #44d788;
-  --danger: #fa461c;
+  --error: #fa461c;
 
   --xsmall: 12px;
   --small: 16px;
@@ -15,18 +12,44 @@
   --xlarge: 28px;
 
   --default-font: "Inter", sans-serif;
+
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .title {
   font-size: var(--large);
   font-weight: bold;
+  text-align: center;
+  padding: 5px;
 }
 
+html,
 body {
-  background-color: var(--light);
+  background-color: white;
   font-family: var(--default-font);
   margin: 0;
   color: var(--dark);
+}
+
+.left {
+  position: absolute;
+  left: 5px;
+}
+
+.right {
+  position: absolute;
+  right: 5px;
+}
+
+.icon {
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: var(--large);
+}
+
+.dynamic-height {
+  height: 100%;
 }
 
 .btn {
@@ -42,15 +65,60 @@ body {
   color: var(--light);
 }
 
-.btn-secondaru {
+.btn-secondary {
   background-color: var(--light);
   color: var(--dark);
 }
 
 .nav-bar {
-  background-color: var(--dark);
-  color: var(--light);
   position: fixed;
+  background-color: white;
+  color: var(--dark);
   width: 100%;
-  padding: 10px;
+  padding: 0;
+  margin: 0;
+  box-shadow: var(--shadow);
+}
+
+.nav-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Loader */
+/* Taken from https://www.w3schools.com/howto/howto_css_loader.asp */
+.loader {
+  border: 8px solid lightgray;
+  border-radius: 50%;
+  border-top: 8px solid var(--dark);
+  width: 30px;
+  height: 30px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+  position: fixed;
+  right: 5px;
+  bottom: 5px;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

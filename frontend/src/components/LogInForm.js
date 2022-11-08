@@ -39,7 +39,7 @@ function LogInForm(props) {
   }
 
   return (
-    <Form title="Log In">
+    <Form title="Log in using your account.">
       <form className={classes.form} onSubmit={submitHandler}>
         <div className={classes.field}>
           <label htmlFor="username">Username</label>

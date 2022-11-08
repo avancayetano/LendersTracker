@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { UserAuthContextProvider } from "../context/user-auth-context";
 import UserAuthContext from "../context/user-auth-context";
+import Loader from "./Loader";
 
 function ProtectedRoute(props) {
   const navigate = useNavigate();
@@ -11,23 +11,27 @@ function ProtectedRoute(props) {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("/api/get-current-user")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "OK") {
-          userAuthContext.setProfile(data.message);
-          setIsLoading(false);
-        } else {
-          alert("Unauthorized.");
-          navigate("/");
-        }
-      });
+    if (userAuthContext.isAuthenticated) {
+      setIsLoading(false);
+    } else {
+      fetch("/api/get-current-user")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            userAuthContext.setProfile(data.message);
+            setIsLoading(false);
+          } else {
+            alert("Unauthorized.");
+            navigate("/");
+          }
+        });
+    }
   }, []);
 
   return (
-    <UserAuthContextProvider>
-      {isLoading ? <h1>Loading</h1> : props.children}
-    </UserAuthContextProvider>
+    <>
+      {isLoading && <Loader />} {props.children}
+    </>
   );
 }
 

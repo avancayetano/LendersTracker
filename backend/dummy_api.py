@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from test_config import ApplicationConfig
-from test_models import db, User
+from dummy_config import AppConfig
+from dummy_models import db, User
 
 app = Flask(__name__)
-app.config.from_object(ApplicationConfig)
+app.config.from_object(AppConfig)
 
 bcrypt = Bcrypt(app)
 
@@ -76,6 +76,7 @@ def login_user():
 @app.route("/api/logout-user", methods=["POST"])
 def logout_user():
     session.pop("user_id")
+    session.clear()
     return jsonify({"status": "OK", "message": "Log out successful."})
 
 

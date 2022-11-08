@@ -40,7 +40,7 @@ function RegisterForm(props) {
   }
 
   return (
-    <Form title="Register">
+    <Form title="Create an account.">
       <form className={classes.form} onSubmit={submitHandler}>
         <div className={classes.field}>
           <label htmlFor="fullname">Full Name</label>
