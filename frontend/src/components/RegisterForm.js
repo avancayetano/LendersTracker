@@ -2,7 +2,6 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Form from "./ui/Form";
-import classes from "./ui/Form.module.css";
 
 function RegisterForm(props) {
   const navigate = useNavigate();
@@ -41,47 +40,60 @@ function RegisterForm(props) {
 
   return (
     <Form title="Create an account.">
-      <form className={classes.form} onSubmit={submitHandler}>
-        <div className={classes.field}>
+      <form className="w3-container w3-center" onSubmit={submitHandler}>
+        <p>
           <label htmlFor="fullname">Full Name</label>
-          <input type="text" required id="fullname" ref={fullnameInputRef} />
-        </div>
-        <div className={classes.field}>
+          <input
+            className="w3-input"
+            type="text"
+            required
+            id="fullname"
+            ref={fullnameInputRef}
+          />
+        </p>
+        <p>
           <label htmlFor="username">Username</label>
-          <input type="text" required id="username" ref={usernameInputRef} />
-        </div>
-        <div className={classes.field}>
+          <input
+            className="w3-input"
+            type="text"
+            required
+            id="username"
+            ref={usernameInputRef}
+          />
+        </p>
+        <p>
           <label htmlFor="password">Password</label>
           <input
+            className="w3-input"
             type="password"
             required
             id="password"
             ref={passwordInputRef}
           />
-        </div>
-        <div className={classes.field}>
+        </p>
+        <p>
           <label htmlFor="confirm-password">Confirm Password</label>
           <input
+            className="w3-input"
             type="password"
             required
             id="confirm-password"
             ref={confirmPasswordRef}
           />
-        </div>
-        <div>
-          <button className="btn btn-primary">Register</button>
-        </div>
+        </p>
+        <p>
+          <button className="w3-btn w3-black">Register</button>
+        </p>
       </form>
-      <hr />
-      <div>
+      <p className="w3-center">
         <span>Already have an account? </span>
         <button
-          className="btn btn-secondary"
+          className="w3-btn w3-blaack w3-border"
           onClick={() => props.setFormType("login")}
         >
           Log in instead.
         </button>
-      </div>
+      </p>
     </Form>
   );
 }

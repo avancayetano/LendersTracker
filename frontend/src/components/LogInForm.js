@@ -2,12 +2,8 @@ import { useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Form from "./ui/Form";
-import classes from "./ui/Form.module.css";
-import UserAuthContext from "../context/user-auth-context";
 
 function LogInForm(props) {
-  const userAuthContext = useContext(UserAuthContext);
-
   const navigate = useNavigate();
 
   const usernameInputRef = useRef();
@@ -40,34 +36,40 @@ function LogInForm(props) {
 
   return (
     <Form title="Log in using your account.">
-      <form className={classes.form} onSubmit={submitHandler}>
-        <div className={classes.field}>
+      <form className="w3-container w3-center" onSubmit={submitHandler}>
+        <p>
           <label htmlFor="username">Username</label>
-          <input type="text" required id="username" ref={usernameInputRef} />
-        </div>
-        <div className={classes.field}>
+          <input
+            className="w3-input"
+            type="text"
+            required
+            id="username"
+            ref={usernameInputRef}
+          />
+        </p>
+        <p>
           <label htmlFor="password">Password</label>
           <input
             type="password"
+            className="w3-input"
             required
             id="password"
             ref={passwordInputRef}
           />
-        </div>
-        <div>
-          <button className="btn btn-primary">Log In</button>
-        </div>
+        </p>
+        <p>
+          <button className="w3-btn w3-black">Log In</button>
+        </p>
       </form>
-      <hr />
-      <div>
+      <p className="w3-center">
         <span>Don't have an account yet? </span>
         <button
-          className="btn btn-secondary"
+          className="w3-btn w3-blaack w3-border"
           onClick={() => props.setFormType("register")}
         >
           Register instead.
         </button>
-      </div>
+      </p>
     </Form>
   );
 }

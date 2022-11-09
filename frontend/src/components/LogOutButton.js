@@ -1,9 +1,14 @@
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { IoLogOutOutline } from "react-icons/io5";
 
+import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
 
-function LogOutButton() {
+function LogOutButton(props) {
+  const navigate = useNavigate();
   const userAuthContext = useContext(UserAuthContext);
+  const appMetaContext = useContext(AppMetaContext);
 
   function logOutHandler(event) {
     event.preventDefault();
@@ -14,6 +19,7 @@ function LogOutButton() {
       .then((data) => {
         if (data.status === "OK") {
           userAuthContext.resetProfile();
+          appMetaContext.setIsSideBarOpen(false);
           navigate("/");
         } else {
           alert("Some error occurred.");
@@ -22,9 +28,13 @@ function LogOutButton() {
   }
 
   return (
-    <div>
-      <button onClick={logOutHandler}>Log Out</button>
-    </div>
+    <button
+      onClick={logOutHandler}
+      className={"w3-btn w3-black " + props.className}
+    >
+      <IoLogOutOutline />
+      Log Out
+    </button>
   );
 }
 
