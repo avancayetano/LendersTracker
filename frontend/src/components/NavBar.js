@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { IoMenu } from "react-icons/io5";
+import { MdOutlineMenu } from "react-icons/md";
 
 import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
@@ -14,13 +14,11 @@ function NavBar() {
         <h3>Lenders' Tracker</h3>
         {userAuthContext.isAuthenticated && (
           <div
-            className="w3-display-left icon w3-bar-item"
-            onClick={() =>
-              appMetaContext.setIsSideBarOpen(!appMetaContext.isSideBarOpen)
-            }
+            className="w3-display-left icon-btn w3-bar-item"
+            onClick={() => appMetaContext.setIsSideBarOpen(true)}
           >
-            <h3>
-              <IoMenu />
+            <h3 className="icon-cont">
+              <MdOutlineMenu />
             </h3>
           </div>
         )}

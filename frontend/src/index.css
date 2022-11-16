@@ -21,10 +21,61 @@
   }
 }
 
-.icon {
+.icon-btn {
   cursor: pointer;
 }
 
-.icon:hover {
+.icon-btn:hover {
   background-color: lightgray;
+}
+
+.icon-cont {
+  display: flex;
+  align-items: center;
+}
+
+.icon-cont-center {
+  justify-content: center;
+}
+
+.margin-right {
+  margin-right: 6px;
+}
+
+.margin-left {
+  margin-left: 6px;
+}
+
+.bottom {
+  position: absolute;
+  display: inline-block;
+  bottom: 0px;
+}
+
+.no-margin {
+  margin: 0px;
+}
+
+.no-padding {
+  padding: 0px;
+}
+
+.close-left {
+  position: relative;
+  animation: closeleft 0.4s;
+}
+
+@keyframes closeleft {
+  from {
+    left: 0px;
+    opacity: 1;
+  }
+  to {
+    left: -300px;
+    opacity: 0;
+  }
+}
+
+.form-width {
+  width: 300px;
 }

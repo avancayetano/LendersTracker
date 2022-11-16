@@ -16,8 +16,8 @@ function App() {
     <>
       <UserAuthContextProvider>
         <AppMetaContextProvider>
-          <NavBar />
           <SideBar />
+          <NavBar />
           <Routes>
             <Route exact path="/" element={<LandingPage />} />
             <Route

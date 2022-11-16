@@ -1,5 +1,6 @@
 import { useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { MdOutlineLogin } from "react-icons/md";
 
 import Form from "./ui/Form";
 
@@ -35,12 +36,12 @@ function LogInForm(props) {
   }
 
   return (
-    <Form title="Log in using your account.">
+    <Form title="Log in using your account." icon={MdOutlineLogin}>
       <form className="w3-container w3-center" onSubmit={submitHandler}>
         <p>
           <label htmlFor="username">Username</label>
           <input
-            className="w3-input"
+            className="w3-input w3-center"
             type="text"
             required
             id="username"
@@ -51,7 +52,7 @@ function LogInForm(props) {
           <label htmlFor="password">Password</label>
           <input
             type="password"
-            className="w3-input"
+            className="w3-input w3-center"
             required
             id="password"
             ref={passwordInputRef}

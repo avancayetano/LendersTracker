@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { MdOutlinePersonOutline } from "react-icons/md";
 
 import Form from "./ui/Form";
 
@@ -39,12 +40,12 @@ function RegisterForm(props) {
   }
 
   return (
-    <Form title="Create an account.">
+    <Form title="Create an account." icon={MdOutlinePersonOutline}>
       <form className="w3-container w3-center" onSubmit={submitHandler}>
         <p>
           <label htmlFor="fullname">Full Name</label>
           <input
-            className="w3-input"
+            className="w3-input w3-center"
             type="text"
             required
             id="fullname"
@@ -54,7 +55,7 @@ function RegisterForm(props) {
         <p>
           <label htmlFor="username">Username</label>
           <input
-            className="w3-input"
+            className="w3-input w3-center"
             type="text"
             required
             id="username"
@@ -64,7 +65,7 @@ function RegisterForm(props) {
         <p>
           <label htmlFor="password">Password</label>
           <input
-            className="w3-input"
+            className="w3-input w3-center"
             type="password"
             required
             id="password"
@@ -74,7 +75,7 @@ function RegisterForm(props) {
         <p>
           <label htmlFor="confirm-password">Confirm Password</label>
           <input
-            className="w3-input"
+            className="w3-input w3-center"
             type="password"
             required
             id="confirm-password"

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoLogOutOutline } from "react-icons/io5";
+import { MdOutlineLogout } from "react-icons/md";
 
 import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
@@ -32,8 +32,10 @@ function LogOutButton(props) {
       onClick={logOutHandler}
       className={"w3-btn w3-black " + props.className}
     >
-      <IoLogOutOutline />
-      Log Out
+      <div className="icon-cont">
+        <MdOutlineLogout />
+        <span className="margin-left">Log Out</span>
+      </div>
     </button>
   );
 }
