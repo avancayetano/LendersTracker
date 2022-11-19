@@ -7,6 +7,7 @@ import {
   MdOutlineAttachMoney,
   MdOutlineArrowBackIosNew,
   MdOutlineClose,
+  MdOutlineAddchart,
 } from "react-icons/md";
 
 import AppMetaContext from "../context/app-meta-context";
@@ -21,8 +22,7 @@ function SideBar() {
     <>
       <div
         className={
-          "w3-sidebar w3-col s8 m4 l2 w3-bar-block w3-card w3-animate-left " +
-          (appMetaContext.isSideBarOpen ? "w3-show" : "w3-hide")
+          "w3-sidebar sidebar w3-col s8 m4 l2 w3-bar-block w3-card w3-animate-left"
         }
       >
         <div
@@ -52,6 +52,15 @@ function SideBar() {
             <span className="margin-left">Dashboard</span>
           </div>
         </Link>
+        <div
+          className="w3-bar-item w3-button"
+          onClick={() => appMetaContext.setIsAddLoanFormOpen(true)}
+        >
+          <div className="icon-cont">
+            <MdOutlineAddchart />
+            <span className="margin-left">Add Loan Transaction</span>
+          </div>
+        </div>
         <Link to="/search" className="w3-bar-item w3-button">
           <div className="icon-cont">
             <MdOutlineSearch />

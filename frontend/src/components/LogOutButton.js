@@ -19,7 +19,7 @@ function LogOutButton(props) {
       .then((data) => {
         if (data.status === "OK") {
           userAuthContext.resetProfile();
-          appMetaContext.setIsSideBarOpen(false);
+          appMetaContext.reset();
           navigate("/");
         } else {
           alert("Some error occurred.");

@@ -38,6 +38,14 @@
   justify-content: center;
 }
 
+.icon-btn {
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background-color: lightgray;
+}
+
 .margin-right {
   margin-right: 6px;
 }
@@ -78,4 +86,16 @@
 
 .form-width {
   width: 300px;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.form-max-height {
+  max-height: 75%;
+  overflow-y: auto;
 }

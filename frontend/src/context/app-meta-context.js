@@ -2,15 +2,27 @@ import { createContext, useState } from "react";
 
 const AppMetaContext = createContext({
   isSideBarOpen: false,
+  isAddLoanFormOpen: false,
   setIsSideBarOpen: () => {},
+  setIsAddLoanFormOpen: () => {},
+  reset: () => {},
 });
 
 export function AppMetaContextProvider(props) {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+  const [isAddLoanFormOpen, setIsAddLoanFormOpen] = useState(false);
+
+  function reset() {
+    setIsSideBarOpen(false);
+    setIsAddLoanFormOpen(false);
+  }
 
   const context = {
-    isSideBarOpen: isSideBarOpen,
-    setIsSideBarOpen: setIsSideBarOpen,
+    isSideBarOpen,
+    setIsSideBarOpen,
+    isAddLoanFormOpen,
+    setIsAddLoanFormOpen,
+    reset,
   };
 
   return (
