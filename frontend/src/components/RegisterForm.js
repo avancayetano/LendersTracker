@@ -41,7 +41,11 @@ function RegisterForm(props) {
 
   return (
     <Form title="Create an account." icon={MdOutlinePersonOutline}>
-      <form className="w3-container w3-center" onSubmit={submitHandler}>
+      <form
+        autoComplete="off"
+        className="w3-container w3-center"
+        onSubmit={submitHandler}
+      >
         <p>
           <label htmlFor="fullname">Full Name</label>
           <input

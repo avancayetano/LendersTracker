@@ -37,7 +37,11 @@ function LogInForm(props) {
 
   return (
     <Form title="Log in using your account." icon={MdOutlineLogin}>
-      <form className="w3-container w3-center" onSubmit={submitHandler}>
+      <form
+        autoComplete="off"
+        className="w3-container w3-center"
+        onSubmit={submitHandler}
+      >
         <p>
           <label htmlFor="username">Username</label>
           <input
