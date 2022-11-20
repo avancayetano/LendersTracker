@@ -99,3 +99,14 @@
   max-height: 75%;
   overflow-y: auto;
 }
+
+.text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.loan-summary-max-height {
+  max-height: 50vh;
+  overflow-y: auto;
+}

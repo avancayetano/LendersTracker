@@ -106,7 +106,7 @@ function AddLoanForm() {
           onSubmit={submitHandler}
         >
           <div className="w3-row">
-            <label htmlFor="debtor" className="w3-small">
+            <label htmlFor="debtor" className="w3-small text-overflow">
               Debtor
             </label>
             <input
@@ -119,7 +119,7 @@ function AddLoanForm() {
           </div>
           <div className="w3-row">
             <div className="w3-twothird">
-              <label htmlFor="amount" className="w3-small">
+              <label htmlFor="amount" className="w3-small text-overflow">
                 Principal amount
               </label>
               <input
@@ -131,7 +131,7 @@ function AddLoanForm() {
               />
             </div>
             <div className="w3-third">
-              <label htmlFor="interest" className="w3-small">
+              <label htmlFor="interest" className="w3-small text-overflow">
                 Interest
               </label>
               <input
@@ -145,7 +145,7 @@ function AddLoanForm() {
           </div>
           <div className="w3-row">
             <div className="w3-half">
-              <label htmlFor="period" className="w3-small">
+              <label htmlFor="period" className="w3-small text-overflow">
                 Period (months)
               </label>
               <input
@@ -157,7 +157,10 @@ function AddLoanForm() {
               />
             </div>
             <div className="w3-half">
-              <label htmlFor="withdrawals-per-month" className="w3-small">
+              <label
+                htmlFor="withdrawals-per-month"
+                className="w3-small text-overflow"
+              >
                 Withdrawals per month
               </label>
               <input
@@ -171,7 +174,7 @@ function AddLoanForm() {
           </div>
           <div className="w3-row">
             <div className="w3-half">
-              <label htmlFor="date-transfer" className="w3-small">
+              <label htmlFor="date-transfer" className="w3-small text-overflow">
                 Date of transfer
               </label>
               <input
@@ -183,7 +186,10 @@ function AddLoanForm() {
               />
             </div>
             <div className="w3-half">
-              <label htmlFor="proof-transfer" className="w3-small">
+              <label
+                htmlFor="proof-transfer"
+                className="w3-small text-overflow"
+              >
                 Proof of transfer
               </label>
               <input
@@ -197,7 +203,10 @@ function AddLoanForm() {
           </div>
           <div className="w3-row">
             <div className="w3-half">
-              <label htmlFor="lender-transfer" className="w3-small">
+              <label
+                htmlFor="lender-transfer"
+                className="w3-small text-overflow"
+              >
                 Lender who transferred
               </label>
               <input
@@ -209,7 +218,7 @@ function AddLoanForm() {
               />
             </div>
             <div className="w3-half">
-              <label htmlFor="surety-debtor" className="w3-small">
+              <label htmlFor="surety-debtor" className="w3-small text-overflow">
                 Surety debtor
               </label>
               <input
@@ -222,7 +231,7 @@ function AddLoanForm() {
           </div>
           <div className="w3-row">
             <div className="w3-half">
-              <label htmlFor="start-period" className="w3-small">
+              <label htmlFor="start-period" className="w3-small text-overflow">
                 Start period
               </label>
               <input
@@ -234,7 +243,10 @@ function AddLoanForm() {
               />
             </div>
             <div className="w3-half">
-              <label htmlFor="contract-signed" className="w3-small">
+              <label
+                htmlFor="contract-signed"
+                className="w3-small text-overflow"
+              >
                 Contract signed
               </label>
               <input
@@ -247,7 +259,7 @@ function AddLoanForm() {
           </div>
           <div className="w3-row">
             <div className="w3-half">
-              <label htmlFor="ack-receipts" className="w3-small">
+              <label htmlFor="ack-receipts" className="w3-small text-overflow">
                 Acknowledgment receipts
               </label>
               <input
@@ -258,7 +270,10 @@ function AddLoanForm() {
               />
             </div>
             <div className="w3-half">
-              <label htmlFor="other-documents" className="w3-small">
+              <label
+                htmlFor="other-documents"
+                className="w3-small text-overflow"
+              >
                 Other documents
               </label>
               <input
@@ -271,7 +286,9 @@ function AddLoanForm() {
           </div>
           <div className="w3-row icon-cont icon-cont-center w3-center w3-padding-small w3-small">
             <MdOutlinePeopleAlt />
-            <span className="margin-left">Lender Contributions</span>
+            <span className="margin-left text-overflow">
+              Lender Contributions
+            </span>
           </div>
           <div>
             {lenderContribPairs.map((obj, idx) => (
@@ -318,7 +335,9 @@ function AddLoanForm() {
             onClick={addLenderContribPair}
           >
             <MdOutlineAdd />
-            <span className="margin-left">Add Lender Contribution</span>
+            <span className="margin-left text-overflow">
+              Add Lender Contribution
+            </span>
           </div>
           <p className="w3-center">
             <button className="w3-btn w3-black w3-border">Submit</button>

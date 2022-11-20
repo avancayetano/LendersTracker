@@ -46,7 +46,11 @@ function SideBar() {
             </span>
           </div>
         </div>
-        <Link to="/dashboard" className="w3-bar-item w3-button">
+        <Link
+          to="/dashboard"
+          className="w3-bar-item w3-button"
+          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+        >
           <div className="icon-cont">
             <MdOutlineHome />
             <span className="margin-left">Dashboard</span>
@@ -54,20 +58,31 @@ function SideBar() {
         </Link>
         <div
           className="w3-bar-item w3-button"
-          onClick={() => appMetaContext.setIsAddLoanFormOpen(true)}
+          onClick={() => {
+            appMetaContext.setIsSideBarOpen(false);
+            appMetaContext.setIsAddLoanFormOpen(true);
+          }}
         >
           <div className="icon-cont">
             <MdOutlineAddchart />
             <span className="margin-left">Add Loan Transaction</span>
           </div>
         </div>
-        <Link to="/search" className="w3-bar-item w3-button">
+        <Link
+          to="/dashboard/search"
+          className="w3-bar-item w3-button"
+          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+        >
           <div className="icon-cont">
             <MdOutlineSearch />
             <span className="margin-left">Search</span>
           </div>
         </Link>
-        <Link to="/transactions" className="w3-bar-item w3-button">
+        <Link
+          to="/dashboard/transactions"
+          className="w3-bar-item w3-button"
+          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+        >
           <div className="icon-cont">
             <MdOutlineAttachMoney />
             <span className="margin-left">Transactions</span>
