@@ -1,7 +1,10 @@
 import { useParams } from "react-router-dom";
-import LoanSummaryCard from "../components/LoanSummaryCard";
+import { MdOutlineSubject } from "react-icons/md";
 
+import LoanSummaryCard from "../components/LoanSummaryCard";
+import LenderBreakdownTable from "../components/LenderBreakdownTable";
 import BasePage from "./BasePage";
+import PaymentTable from "../components/PaymentTable";
 
 function LoanDetailsPage() {
   const params = useParams();
@@ -55,16 +58,97 @@ function LoanDetailsPage() {
   ];
 
   const loanDetails = loanTransactions.filter(
-    (obj, idx) => obj.loanId == loanId
+    (obj, idx) => obj.loanId === loanId
   )[0];
+
+  const lenderBreakdown = [
+    {
+      lender: "Lender1",
+      contribution: 10000,
+      amortizationPerWithdrawal: 500,
+      amountAtEnd: 6000,
+      completedAmortization: 2000,
+      balanceAmortization: 4000,
+    },
+    {
+      lender: "Lender2",
+      contribution: 123123,
+      amortizationPerWithdrawal: 500,
+      amountAtEnd: 6000,
+      completedAmortization: 2000,
+      balanceAmortization: 4000,
+    },
+  ];
+
+  const payments = [
+    {
+      period: 1,
+      receiptDate: "15 Oct 2022",
+      amortization: 1000,
+      status: [
+        { lender: "Lender 1", received: true },
+        { lender: "Lender 2", received: true },
+      ],
+    },
+    {
+      period: 1,
+      receiptDate: "30 Oct 2022",
+      amortization: 1000,
+      status: [
+        { lender: "Lender 1", received: true },
+        { lender: "Lender 2", received: true },
+      ],
+    },
+    {
+      period: 2,
+      receiptDate: "15 Oct 2022",
+      amortization: 1000,
+      status: [
+        { lender: "Lender 1", received: true },
+        { lender: "Lender 2", received: false },
+      ],
+    },
+    {
+      period: 2,
+      receiptDate: "15 Oct 2022",
+      amortization: 1000,
+      status: [
+        { lender: "Lender 1", received: false },
+        { lender: "Lender 2", received: false },
+      ],
+    },
+    {
+      period: 3,
+      receiptDate: "15 Oct 2022",
+      amortization: 1000,
+      status: [
+        { lender: "Lender 1", received: false },
+        { lender: "Lender 2", received: false },
+      ],
+    },
+    {
+      period: 3,
+      receiptDate: "15 Oct 2022",
+      amortization: 1000,
+      status: [
+        { lender: "Lender 1", received: false },
+        { lender: "Lender 2", received: false },
+      ],
+    },
+  ];
 
   return (
     <BasePage>
       <div className="w3-container w3-center">
-        <h4>Loan {loanId} - Details </h4>
-        <LoanSummaryCard data={loanDetails} />
-        <h4>Lender breakdown table here... </h4>
-        <h4>Payment table here... </h4>
+        <h4 className="icon-cont icon-cont-center">
+          <MdOutlineSubject />
+          <span className="margin-left text-overflow">
+            Loan {loanId} - Details
+          </span>
+        </h4>
+        <LoanSummaryCard data={loanDetails} clickable={false} columns={4} />
+        <LenderBreakdownTable data={lenderBreakdown} />
+        <PaymentTable data={payments} />
       </div>
     </BasePage>
   );

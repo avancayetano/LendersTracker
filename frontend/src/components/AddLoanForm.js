@@ -1,4 +1,4 @@
-import { useContext, useState, useRef } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import {
   MdOutlineAttachMoney,
   MdOutlineAdd,
@@ -11,6 +11,7 @@ import AppMetaContext from "../context/app-meta-context";
 function AddLoanForm() {
   const appMetaContext = useContext(AppMetaContext);
   const [lenderContribPairs, setLenderContribPairs] = useState([]);
+  const [principalAmt, setPrincipalAmt] = useState(0);
 
   const debtorRef = useRef();
   const principalAmountRef = useRef();
@@ -39,6 +40,17 @@ function AddLoanForm() {
       })
     );
   }
+
+  useEffect(
+    () =>
+      setPrincipalAmt(
+        lenderContribPairs.reduce(
+          (prev, curr) => prev + parseFloat(curr.contribution),
+          0
+        )
+      ),
+    [lenderContribPairs]
+  );
 
   // Note to self: this can still be optimized using an array of Refs instead of event listening
   function editLenderContribPair(event, idx, editField) {
@@ -117,6 +129,62 @@ function AddLoanForm() {
               ref={debtorRef}
             />
           </div>
+          <div className="w3-row icon-cont icon-cont-center w3-center w3-padding w3-small">
+            <MdOutlinePeopleAlt />
+            <span className="margin-left text-overflow">
+              Lender Contributions
+            </span>
+          </div>
+          <div>
+            {lenderContribPairs.map((obj, idx) => (
+              <div className="w3-row" key={"lender-contrib-" + idx}>
+                <div className="w3-twothird">
+                  <input
+                    className="w3-input w3-center w3-border"
+                    type="text"
+                    placeholder="Lender Name"
+                    onChange={(event) => {
+                      editLenderContribPair(event, idx, "lender");
+                    }}
+                    value={obj.lender}
+                    required
+                  />
+                </div>
+                <div className="w3-third">
+                  <div className="w3-threequarter">
+                    <input
+                      className="w3-input w3-center w3-border"
+                      type="number"
+                      placeholder="Contribution"
+                      required
+                      onChange={(event) => {
+                        editLenderContribPair(event, idx, "contribution");
+                      }}
+                      value={obj.contribution}
+                    />
+                  </div>
+                  <div
+                    className="w3-quarter w3-button w3-border w3-center"
+                    title="Remove entry."
+                    onClick={() => removeLenderContribPair(idx)}
+                  >
+                    -
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className="w3-show icon-cont icon-cont-center w3-center w3-button w3-light-grey w3-padding-small w3-small"
+            onClick={addLenderContribPair}
+          >
+            <MdOutlineAdd />
+            <span className="margin-left text-overflow">
+              Add Lender Contribution
+            </span>
+          </div>
+
           <div className="w3-row">
             <div className="w3-twothird">
               <label htmlFor="amount" className="w3-small text-overflow">
@@ -125,8 +193,9 @@ function AddLoanForm() {
               <input
                 className="w3-input w3-center w3-border"
                 type="number"
-                required
+                disabled
                 id="amount"
+                value={principalAmt}
                 ref={principalAmountRef}
               />
             </div>
@@ -284,61 +353,7 @@ function AddLoanForm() {
               />
             </div>
           </div>
-          <div className="w3-row icon-cont icon-cont-center w3-center w3-padding-small w3-small">
-            <MdOutlinePeopleAlt />
-            <span className="margin-left text-overflow">
-              Lender Contributions
-            </span>
-          </div>
-          <div>
-            {lenderContribPairs.map((obj, idx) => (
-              <div className="w3-row" key={"lender-contrib-" + idx}>
-                <div className="w3-twothird">
-                  <input
-                    className="w3-input w3-center w3-border"
-                    type="text"
-                    placeholder="Lender Name"
-                    onChange={(event) => {
-                      editLenderContribPair(event, idx, "lender");
-                    }}
-                    value={obj.lender}
-                    required
-                  />
-                </div>
-                <div className="w3-third">
-                  <div className="w3-threequarter">
-                    <input
-                      className="w3-input w3-center w3-border"
-                      type="number"
-                      placeholder="Contribution"
-                      required
-                      onChange={(event) => {
-                        editLenderContribPair(event, idx, "contribution");
-                      }}
-                      value={obj.contribution}
-                    />
-                  </div>
-                  <div
-                    className="w3-quarter w3-button w3-border w3-center"
-                    title="Remove entry."
-                    onClick={() => removeLenderContribPair(idx)}
-                  >
-                    -
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
 
-          <div
-            className="w3-show icon-cont icon-cont-center w3-center w3-button w3-light-grey w3-padding-small w3-small"
-            onClick={addLenderContribPair}
-          >
-            <MdOutlineAdd />
-            <span className="margin-left text-overflow">
-              Add Lender Contribution
-            </span>
-          </div>
           <p className="w3-center">
             <button className="w3-btn w3-black w3-border">Submit</button>
           </p>

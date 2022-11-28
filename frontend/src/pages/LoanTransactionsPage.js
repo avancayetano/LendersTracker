@@ -57,12 +57,8 @@ function LoanTransactionsPage() {
         <h4>Loan Transactions</h4>
         <h6>{"(Dummy data) Click either."}</h6>
         {loanTransactions.map((obj, idx) => (
-          <Link
-            to={"/dashboard/transactions/" + obj.loanId}
-            className="w3-button w3-hover-pale-blue"
-            key={obj.loanId}
-          >
-            <LoanSummaryCard data={obj} />
+          <Link to={"/dashboard/transactions/" + obj.loanId} key={obj.loanId}>
+            <LoanSummaryCard data={obj} clickable={true} columns={4} />
           </Link>
         ))}
       </div>

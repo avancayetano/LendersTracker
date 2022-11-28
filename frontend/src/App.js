@@ -1,11 +1,9 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import NavBar from "./components/NavBar";
 import LandingPage from "./pages/LandingPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import { UserAuthContextProvider } from "./context/user-auth-context";
 import { AppMetaContextProvider } from "./context/app-meta-context";
 import SearchPage from "./pages/SearchPage";
@@ -17,7 +15,6 @@ function App() {
     <>
       <UserAuthContextProvider>
         <AppMetaContextProvider>
-          <NavBar />
           <Routes>
             <Route exact path="/" element={<LandingPage />} />
             <Route
@@ -45,7 +42,7 @@ function App() {
               }
             />
             <Route
-              path="/dashboard/transactions/:loanId/"
+              path="/dashboard/transactions/:loanId"
               element={
                 <ProtectedRoute>
                   <LoanDetailsPage />

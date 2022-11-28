@@ -5,6 +5,7 @@ import LogInForm from "../components/LogInForm";
 import RegisterForm from "../components/RegisterForm";
 import UserAuthContext from "../context/user-auth-context";
 import Loader from "../components/Loader";
+import BasePage from "./BasePage";
 
 function LandingPage(props) {
   const navigate = useNavigate();
@@ -30,14 +31,14 @@ function LandingPage(props) {
   }, []);
 
   return (
-    <>
+    <BasePage>
       {isLoading && <Loader />}
       {formType === "login" ? (
         <LogInForm setFormType={setFormType} />
       ) : (
         <RegisterForm setFormType={setFormType} />
       )}
-    </>
+    </BasePage>
   );
 }
 
