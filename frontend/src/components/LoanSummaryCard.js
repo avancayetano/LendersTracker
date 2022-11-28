@@ -24,25 +24,27 @@ function LoanSummaryCard(props) {
         (props.clickable ? " clickable w3-hover-light-grey" : "")
       }
     >
-      {!props.clickable && (
-        <div className="w3-display-container w3-row w3-light-grey">
-          <div className="w3-padding w3-left icon-cont icon-cont-center">
-            <MdOutlineStickyNote2 />
-            <span className="margin-left text-overflow">Loan Summary</span>
-            <span className="w3-display-right">
-              <button
-                className={"w3-button w3-hover-red w3-red"}
-                onClick={deleteHandler}
-              >
-                <div className="icon-cont">
-                  <MdOutlineDelete />
-                  <span className="margin-left">Delete</span>
-                </div>
-              </button>
-            </span>
-          </div>
+      <div className="w3-display-container w3-row w3-dark-grey">
+        <div className="w3-padding w3-left icon-cont icon-cont-center">
+          {!props.clickable && (
+            <>
+              <MdOutlineStickyNote2 />
+              <span className="margin-left text-overflow">Loan Summary</span>
+              <span className="w3-display-right">
+                <button
+                  className={"w3-button w3-hover-red w3-red"}
+                  onClick={deleteHandler}
+                >
+                  <div className="icon-cont">
+                    <MdOutlineDelete />
+                    <span className="margin-left">Delete</span>
+                  </div>
+                </button>
+              </span>
+            </>
+          )}
         </div>
-      )}
+      </div>
 
       <div className="w3-responsive w3-small">
         <table className="w3-table">

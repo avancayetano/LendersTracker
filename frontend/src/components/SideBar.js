@@ -8,6 +8,9 @@ import {
   MdOutlineArrowBackIosNew,
   MdOutlineClose,
   MdOutlineAddchart,
+  MdOutlinePostAdd,
+  MdOutlineManageSearch,
+  MdOutlineViewStream,
 } from "react-icons/md";
 
 import AppMetaContext from "../context/app-meta-context";
@@ -64,7 +67,7 @@ function SideBar() {
           }}
         >
           <div className="icon-cont">
-            <MdOutlineAddchart />
+            <MdOutlinePostAdd />
             <span className="margin-left">Add Loan Transaction</span>
           </div>
         </div>
@@ -74,7 +77,7 @@ function SideBar() {
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont">
-            <MdOutlineSearch />
+            <MdOutlineManageSearch />
             <span className="margin-left">Search</span>
           </div>
         </Link>
@@ -84,7 +87,7 @@ function SideBar() {
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont">
-            <MdOutlineAttachMoney />
+            <MdOutlineViewStream />
             <span className="margin-left">Transactions</span>
           </div>
         </Link>

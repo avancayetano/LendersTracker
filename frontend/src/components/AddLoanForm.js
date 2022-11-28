@@ -3,6 +3,8 @@ import {
   MdOutlineAttachMoney,
   MdOutlineAdd,
   MdOutlinePeopleAlt,
+  MdOutlineAddchart,
+  MdOutlinePostAdd,
 } from "react-icons/md";
 
 import Form from "./ui/Form";
@@ -109,7 +111,7 @@ function AddLoanForm() {
     <>
       <Form
         title="Add Loan Transaction."
-        icon={MdOutlineAttachMoney}
+        icon={MdOutlinePostAdd}
         closeHandler={closeHandler}
       >
         <form

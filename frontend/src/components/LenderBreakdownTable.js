@@ -12,7 +12,7 @@ function LenderBreakdownTable(props) {
 
   return (
     <div className="w3-card w3-margin loan-summary-max-height">
-      <div className="w3-display-container w3-row w3-light-grey">
+      <div className="w3-display-container w3-row w3-dark-grey">
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <MdPeopleOutline />
           <span className="margin-left text-overflow">Lender Breakdown</span>
