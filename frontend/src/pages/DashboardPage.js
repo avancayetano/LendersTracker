@@ -1,10 +1,13 @@
-import { useContext, useRef } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineHome, MdOutlineTableRows } from "react-icons/md";
+import Chart from "chart.js/auto";
+import { Colors } from "chart.js";
 
 import UserAuthContext from "../context/user-auth-context";
 import BasePage from "./BasePage";
 import Table from "../components/Table";
+import HorizontalTable from "../components/HorizontalTable";
 
 function DashboardPage(props) {
   const navigate = useNavigate();
@@ -59,30 +62,30 @@ function DashboardPage(props) {
     ],
   };
 
-  // const breakdownChartCanvas = useRef();
+  const breakdownChartCanvasRef = useRef();
 
-  // const breakdownChartConfig = {
-  //   type: "pie",
-  //   data: data,
-  // };
+  const breakdownChartData = {
+    labels: balanceAmortizationBreakdown.breakdown.map((obj) => obj.debtor),
+    datasets: [
+      {
+        label: "",
+        data: balanceAmortizationBreakdown.breakdown.map(
+          (obj) => obj.cumulativeBal
+        ),
+      },
+    ],
+  };
 
-  // const breakdownChartData = {
-  //   labels: ["Red", "Blue", "Yellow"],
-  //   datasets: [
-  //     {
-  //       label: "My First Dataset",
-  //       data: [300, 50, 100],
-  //       backgroundColor: [
-  //         "rgb(255, 99, 132)",
-  //         "rgb(54, 162, 235)",
-  //         "rgb(255, 205, 86)",
-  //       ],
-  //       hoverOffset: 4,
-  //     },
-  //   ],
-  // };
+  const breakdownChartConfig = {
+    type: "pie",
+    data: breakdownChartData,
+  };
 
-  // const breakdownChart = new Chart(ctx, config);
+  useEffect(() => {
+    const breakdownChartCtx = breakdownChartCanvasRef.current.getContext("2d");
+    Chart.register(Colors);
+    const breakdownChart = new Chart(breakdownChartCtx, breakdownChartConfig);
+  }, []);
 
   return (
     <BasePage>
@@ -92,9 +95,16 @@ function DashboardPage(props) {
           <span className="margin-left text-overflow">Dashboard</span>
         </h4>
         <h4>Welcome, {userAuthContext.fullname}!</h4>
-        <div className="w3-container w3-border">
+        <div className="w3-container w3-card w3-margin w3-padding">
           <div className="w3-twothird">
-            <div className="w3-container">Table here</div>
+            <div className="w3-container">
+              <HorizontalTable
+                icon={MdOutlineTableRows}
+                title="Balance Amortization Breakdown"
+                data={balanceAmortizationBreakdown.breakdown}
+                headers={["debtor", "cumulativeBal"]}
+              />
+            </div>
             <div className="w3-container">
               <div className="w3-half">
                 Cumulative Balance Amortization:{" "}
@@ -106,7 +116,11 @@ function DashboardPage(props) {
               </div>
             </div>
           </div>
-          <div className="w3-third">asdsad</div>
+          <div className="w3-third w3-container w3-center">
+            <div className="w3-half">
+              <canvas ref={breakdownChartCanvasRef}></canvas>
+            </div>
+          </div>
         </div>
 
         <Table
