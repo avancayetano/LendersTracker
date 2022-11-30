@@ -72,25 +72,26 @@ function SideBar() {
           </div>
         </div>
         <Link
-          to="/dashboard/search"
-          className="w3-bar-item w3-button"
-          onClick={() => appMetaContext.setIsSideBarOpen(false)}
-        >
-          <div className="icon-cont">
-            <MdOutlineManageSearch />
-            <span className="margin-left">Search</span>
-          </div>
-        </Link>
-        <Link
           to="/dashboard/transactions"
           className="w3-bar-item w3-button"
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont">
             <MdOutlineViewStream />
-            <span className="margin-left">Transactions</span>
+            <span className="margin-left">Personal Transactions</span>
           </div>
         </Link>
+        <Link
+          to="/dashboard/others-transactions"
+          className="w3-bar-item w3-button"
+          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+        >
+          <div className="icon-cont">
+            <MdOutlineManageSearch />
+            <span className="margin-left">Others' Transactions</span>
+          </div>
+        </Link>
+
         <LogOutButton className="bottom w3-bar-item w3-center" />
       </div>
     </>

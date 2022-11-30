@@ -47,7 +47,8 @@ function AddLoanForm() {
     () =>
       setPrincipalAmt(
         lenderContribPairs.reduce(
-          (prev, curr) => prev + parseFloat(curr.contribution),
+          (prev, curr) =>
+            prev + (curr.contribution ? parseFloat(curr.contribution) : 0),
           0
         )
       ),

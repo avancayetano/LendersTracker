@@ -6,7 +6,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { UserAuthContextProvider } from "./context/user-auth-context";
 import { AppMetaContextProvider } from "./context/app-meta-context";
-import SearchPage from "./pages/SearchPage";
+import OthersTransactionsPage from "./pages/OthersTransactionsPage";
 import LoanTransactionsPage from "./pages/LoanTransactionsPage";
 import LoanDetailsPage from "./pages/LoanDetailsPage";
 
@@ -26,14 +26,6 @@ function App() {
               }
             />
             <Route
-              path="/dashboard/search"
-              element={
-                <ProtectedRoute>
-                  <SearchPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/dashboard/transactions"
               element={
                 <ProtectedRoute>
@@ -46,6 +38,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <LoanDetailsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/others-transactions"
+              element={
+                <ProtectedRoute>
+                  <OthersTransactionsPage />
                 </ProtectedRoute>
               }
             />

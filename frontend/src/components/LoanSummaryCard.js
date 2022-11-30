@@ -20,7 +20,7 @@ function LoanSummaryCard(props) {
   return (
     <div
       className={
-        "w3-card w3-margin loan-summary-max-height" +
+        "w3-card w3-section loan-summary-max-height" +
         (props.clickable ? " clickable w3-hover-light-grey" : "")
       }
     >
