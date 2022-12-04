@@ -8,6 +8,7 @@ import UserAuthContext from "../context/user-auth-context";
 import BasePage from "./BasePage";
 import Table from "../components/Table";
 import HorizontalTable from "../components/HorizontalTable";
+import BreakdownChart from "../components/BreakdownChart";
 
 function DashboardPage(props) {
   const navigate = useNavigate();
@@ -62,31 +63,6 @@ function DashboardPage(props) {
     ],
   };
 
-  const breakdownChartCanvasRef = useRef();
-
-  const breakdownChartData = {
-    labels: balanceAmortizationBreakdown.breakdown.map((obj) => obj.debtor),
-    datasets: [
-      {
-        label: "",
-        data: balanceAmortizationBreakdown.breakdown.map(
-          (obj) => obj.cumulativeBal
-        ),
-      },
-    ],
-  };
-
-  const breakdownChartConfig = {
-    type: "pie",
-    data: breakdownChartData,
-  };
-
-  useEffect(() => {
-    const breakdownChartCtx = breakdownChartCanvasRef.current.getContext("2d");
-    Chart.register(Colors);
-    const breakdownChart = new Chart(breakdownChartCtx, breakdownChartConfig);
-  }, []);
-
   return (
     <BasePage>
       <div className="w3-container w3-center">
@@ -95,30 +71,48 @@ function DashboardPage(props) {
           <span className="margin-left text-overflow">Dashboard</span>
         </h4>
         <h4>Welcome, {userAuthContext.fullname}!</h4>
-        <div className="w3-container w3-card w3-margin w3-padding">
-          <div className="w3-twothird">
-            <div className="w3-container">
-              <HorizontalTable
+        <div className="w3-container w3-card w3-margin-top">
+          <div className="w3-half">
+            <div className="w3-margin">
+              <Table
                 icon={MdOutlineTableRows}
                 title="Balance Amortization Breakdown"
                 data={balanceAmortizationBreakdown.breakdown}
                 headers={["debtor", "cumulativeBal"]}
               />
             </div>
-            <div className="w3-container">
-              <div className="w3-half">
-                Cumulative Balance Amortization:{" "}
-                {balanceAmortizationBreakdown.cumulativeBalAmortization}
-              </div>
-              <div className="w3-half">
-                Cumulative Completed Amortization:{" "}
-                {balanceAmortizationBreakdown.cumulativeCompAmortization}
-              </div>
+          </div>
+          <div className="w3-quarter w3-padding-left">
+            <div className="w3-margin">
+              <HorizontalTable
+                icon={MdOutlineTableRows}
+                title="Summary"
+                data={[
+                  {
+                    label: "Cumulative Balance Amortization",
+                    value:
+                      balanceAmortizationBreakdown.cumulativeBalAmortization,
+                  },
+                  {
+                    label: "Cumulative Completed Amortization",
+                    value:
+                      balanceAmortizationBreakdown.cumulativeCompAmortization,
+                  },
+                ]}
+                headers={["label", "value"]}
+              />
             </div>
           </div>
-          <div className="w3-third w3-container w3-center">
-            <div className="w3-half">
-              <canvas ref={breakdownChartCanvasRef}></canvas>
+
+          <div className="w3-quarter">
+            <div>
+              <BreakdownChart
+                breakdown={balanceAmortizationBreakdown.breakdown.map((obj) => {
+                  return { label: obj.debtor, value: obj.cumulativeBal };
+                })}
+                label=""
+                title="Cumulative Balance Amortization Breakdown"
+              />
             </div>
           </div>
         </div>

@@ -28,7 +28,7 @@ function Table(props) {
   }, [sortBy, isAscending]);
 
   return (
-    <div className="w3-card w3-section loan-summary-max-height">
+    <div className="w3-card w3-section loan-summary-max-height text-overflow">
       <div className="w3-display-container w3-row w3-dark-grey">
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <props.icon />
@@ -44,7 +44,10 @@ function Table(props) {
                 <th
                   key={label}
                   onClick={() => sortHandler(label)}
-                  className="cursor noselect w3-hover-light-grey"
+                  className={
+                    "cursor noselect w3-hover-light-grey" +
+                    (sortBy === label ? " w3-light-grey" : "")
+                  }
                 >
                   {label}
                   {label === sortBy ? (
