@@ -1,4 +1,5 @@
 import { MdOutlineDelete, MdOutlineStickyNote2 } from "react-icons/md";
+import format from "../format";
 
 function LoanSummaryCard(props) {
   // todo: make a fixed order of labels
@@ -29,7 +30,7 @@ function LoanSummaryCard(props) {
           {!props.clickable && (
             <>
               <MdOutlineStickyNote2 />
-              <span className="margin-left text-overflow">Loan Summary</span>
+              <span className="margin-left">Loan Summary</span>
               <span className="w3-display-right">
                 <button
                   className={"w3-button w3-hover-red w3-red"}
@@ -47,15 +48,20 @@ function LoanSummaryCard(props) {
       </div>
 
       <div className="w3-responsive w3-small">
-        <table className="w3-table">
+        <table className="w3-table text-overflow">
           <tbody>
             {tableLabels.map((arr, i) => (
               <tr key={"row-" + i}>
                 {arr.map((label, j) => (
-                  <td key={"row-" + i + "-col-" + j}>
-                    <div className="w3-half w3-center">{label}</div>
+                  <td
+                    key={"row-" + i + "-col-" + j}
+                    className={props.clickable ? "" : "w3-hover-dark-grey"}
+                  >
+                    <div className="w3-half w3-center">
+                      {format(label, true)}
+                    </div>
                     <div className="w3-half w3-center w3-light-grey">
-                      {props.data[label]}
+                      {format(props.data[label])}
                     </div>
                   </td>
                 ))}

@@ -1,10 +1,12 @@
 import { useParams } from "react-router-dom";
-import { MdOutlineSubject } from "react-icons/md";
+import { MdOutlineSubject, MdPeopleOutline } from "react-icons/md";
 
 import LoanSummaryCard from "../components/LoanSummaryCard";
 import LenderBreakdownTable from "../components/LenderBreakdownTable";
 import BasePage from "./BasePage";
 import PaymentTable from "../components/PaymentTable";
+import BreakdownChart from "../components/BreakdownChart";
+import Table from "../components/Table";
 
 function LoanDetailsPage() {
   const params = useParams();
@@ -146,9 +148,39 @@ function LoanDetailsPage() {
             Loan {loanId} - Details
           </span>
         </h4>
-        <LoanSummaryCard data={loanDetails} clickable={false} columns={4} />
-        <LenderBreakdownTable data={lenderBreakdown} />
-        <PaymentTable data={payments} />
+        <div className="w3-row">
+          <LoanSummaryCard data={loanDetails} clickable={false} columns={4} />
+        </div>
+        <div className="w3-row">
+          <span className="w3-mobile w3-col s8 m9 l10">
+            <Table
+              icon={MdPeopleOutline}
+              title="Lender Breakdown"
+              data={lenderBreakdown}
+              keys={[
+                "lender",
+                "contribution",
+                "amortizationPerWithdrawal",
+                "amountAtEnd",
+                "completedAmortization",
+                "balanceAmortization",
+              ]}
+            />
+          </span>
+          <span className="w3-mobile w3-col s4 m3 l2">
+            <BreakdownChart
+              breakdown={lenderBreakdown.map((obj) => {
+                return { label: obj.lender, value: obj.contribution };
+              })}
+              label=""
+              title="Cumulative Balance Amortization Breakdown"
+            />
+          </span>
+        </div>
+
+        <div className="w3-row">
+          <PaymentTable data={payments} />
+        </div>
       </div>
     </BasePage>
   );

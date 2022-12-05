@@ -162,3 +162,15 @@ td {
 .full-height {
   height: 100% !important;
 }
+
+select {
+  -webkit-appearance: button !important;
+  -moz-appearance: button !important;
+  appearance: button !important;
+  cursor: pointer;
+}
+
+.padding-x {
+  padding-left: 16px;
+  padding-right: 16px;
+}

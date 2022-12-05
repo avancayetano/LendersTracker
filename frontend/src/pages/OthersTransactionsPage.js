@@ -39,15 +39,6 @@ function OthersTransactionsPage() {
     },
   ];
 
-  const tableHeaders = [
-    "lender",
-    "loanId",
-    "debtor",
-    "amortizationPerWithdrawal",
-    "balanceAmortization",
-    "receiptDate",
-  ];
-
   return (
     <BasePage>
       <div className="w3-container w3-center">
@@ -61,7 +52,22 @@ function OthersTransactionsPage() {
           icon={MdOutlineTableRows}
           title="Balance Amortization List"
           data={tableData}
-          headers={tableHeaders}
+          keys={[
+            "lender",
+            "loanId",
+            "debtor",
+            "amortizationPerWithdrawal",
+            "balanceAmortization",
+            "receiptDate",
+          ]}
+          headers={[
+            "lender",
+            "loanId",
+            "debtor",
+            "amortizationPerWithdrawal",
+            "balanceAmortization",
+            "receiptDateAlt",
+          ]}
         />
       </div>
     </BasePage>

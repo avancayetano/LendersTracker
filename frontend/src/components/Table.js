@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 
+import format from "../format";
+
 function Table(props) {
-  const [sortBy, setSortBy] = useState(props.headers[0]);
+  const [sortBy, setSortBy] = useState(props.keys[0]);
   const [isAscending, setIsAscending] = useState(true);
   const [data, setData] = useState(props.data);
 
@@ -28,11 +30,11 @@ function Table(props) {
   }, [sortBy, isAscending]);
 
   return (
-    <div className="w3-card w3-section loan-summary-max-height text-overflow">
+    <div className="w3-card w3-section loan-summary-max-height">
       <div className="w3-display-container w3-row w3-dark-grey">
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <props.icon />
-          <span className="margin-left text-overflow">{props.title}</span>
+          <span className="margin-left">{props.title}</span>
         </div>
       </div>
 
@@ -40,7 +42,7 @@ function Table(props) {
         <table className="w3-table w3-small w3-centered text-overflow">
           <tbody>
             <tr>
-              {props.headers.map((label) => (
+              {(props.headers || props.keys).map((label) => (
                 <th
                   key={label}
                   onClick={() => sortHandler(label)}
@@ -49,23 +51,23 @@ function Table(props) {
                     (sortBy === label ? " w3-light-grey" : "")
                   }
                 >
-                  {label}
+                  {format(label, true)}
                   {label === sortBy ? (
                     isAscending ? (
-                      "▼"
+                      " ▼"
                     ) : (
-                      "▲"
+                      " ▲"
                     )
                   ) : (
-                    <span className="invisible">▲</span>
+                    <span className="invisible"> ▲</span>
                   )}
                 </th>
               ))}
             </tr>
             {data.map((obj, i) => (
-              <tr key={"row-" + i}>
-                {props.headers.map((label, j) => (
-                  <td key={"row-" + i + "-col-" + j}>{obj[label]}</td>
+              <tr key={"row-" + i} className="w3-hover-light-grey">
+                {props.keys.map((label, j) => (
+                  <td key={"row-" + i + "-col-" + j}>{format(obj[label])}</td>
                 ))}
               </tr>
             ))}

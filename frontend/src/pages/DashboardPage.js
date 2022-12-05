@@ -45,14 +45,6 @@ function DashboardPage(props) {
     },
   ];
 
-  const tableHeaders = [
-    "loanId",
-    "debtor",
-    "amortizationPerWithdrawal",
-    "balanceAmortization",
-    "receiptDate",
-  ];
-
   const balanceAmortizationBreakdown = {
     cumulativeBalAmortization: 70000,
     cumulativeCompAmortization: 105605050,
@@ -71,14 +63,14 @@ function DashboardPage(props) {
           <span className="margin-left text-overflow">Dashboard</span>
         </h4>
         <h4>Welcome, {userAuthContext.fullname}!</h4>
-        <div className="w3-container w3-card w3-margin-top">
-          <div className="w3-half">
+        <div className="w3-container w3-display-container w3-card w3-margin-top">
+          <div className="w3-half full-height">
             <div className="w3-margin">
               <Table
                 icon={MdOutlineTableRows}
-                title="Balance Amortization Breakdown"
+                title="Cumulative Balance Amortization"
                 data={balanceAmortizationBreakdown.breakdown}
-                headers={["debtor", "cumulativeBal"]}
+                keys={["debtor", "cumulativeBal"]}
               />
             </div>
           </div>
@@ -87,19 +79,11 @@ function DashboardPage(props) {
               <HorizontalTable
                 icon={MdOutlineTableRows}
                 title="Summary"
-                data={[
-                  {
-                    label: "Cumulative Balance Amortization",
-                    value:
-                      balanceAmortizationBreakdown.cumulativeBalAmortization,
-                  },
-                  {
-                    label: "Cumulative Completed Amortization",
-                    value:
-                      balanceAmortizationBreakdown.cumulativeCompAmortization,
-                  },
+                data={balanceAmortizationBreakdown}
+                keys={[
+                  "cumulativeBalAmortization",
+                  "cumulativeCompAmortization",
                 ]}
-                headers={["label", "value"]}
               />
             </div>
           </div>
@@ -110,8 +94,7 @@ function DashboardPage(props) {
                 breakdown={balanceAmortizationBreakdown.breakdown.map((obj) => {
                   return { label: obj.debtor, value: obj.cumulativeBal };
                 })}
-                label=""
-                title="Cumulative Balance Amortization Breakdown"
+                title="Cumulative Balance Amortization"
               />
             </div>
           </div>
@@ -119,9 +102,22 @@ function DashboardPage(props) {
 
         <Table
           icon={MdOutlineTableRows}
-          title="Balance Amortization Breakdown"
+          title="Cumulative Balance Amortization Breakdown"
           data={tableData}
-          headers={tableHeaders}
+          keys={[
+            "loanId",
+            "debtor",
+            "amortizationPerWithdrawal",
+            "balanceAmortization",
+            "receiptDate",
+          ]}
+          headers={[
+            "loanId",
+            "debtor",
+            "amortizationPerWithdrawal",
+            "balanceAmortization",
+            "receiptDateAlt",
+          ]}
         />
       </div>
     </BasePage>

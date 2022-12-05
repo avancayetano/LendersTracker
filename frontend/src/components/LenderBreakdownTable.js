@@ -1,7 +1,8 @@
 import { MdPeopleOutline } from "react-icons/md";
+import format from "../format";
 
 function LenderBreakdownTable(props) {
-  const order = [
+  const keys = [
     "lender",
     "contribution",
     "amortizationPerWithdrawal",
@@ -22,18 +23,17 @@ function LenderBreakdownTable(props) {
         <table className="w3-table">
           <tbody>
             <tr className="w3-border-bottom">
-              <th className="w3-center">Lenders</th>
-              <th className="w3-center">Principal Amount Contribution</th>
-              <th className="w3-center">Amortization per withdrawal</th>
-              <th className="w3-center">Amount at end</th>
-              <th className="w3-center">Completed amortization</th>
-              <th className="w3-center">Balance amortization</th>
+              {keys.map((label, i) => (
+                <th className="w3-center" key={label}>
+                  {format(label, true)}
+                </th>
+              ))}
             </tr>
             {props.data.map((obj, i) => (
-              <tr key={"row-" + i}>
-                {order.map((key, j) => (
+              <tr key={"row-" + i} className="w3-hover-light-grey">
+                {keys.map((label, j) => (
                   <td className="w3-center" key={"row-" + i + "-col-" + j}>
-                    {obj[key]}
+                    {format(obj[label])}
                   </td>
                 ))}
               </tr>
