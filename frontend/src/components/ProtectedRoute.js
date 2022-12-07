@@ -28,11 +28,7 @@ function ProtectedRoute(props) {
     }
   }, []);
 
-  return (
-    <>
-      {isLoading && <Loader />} {props.children}
-    </>
-  );
+  return <>{isLoading ? <Loader /> : props.children}</>;
 }
 
 export default ProtectedRoute;
