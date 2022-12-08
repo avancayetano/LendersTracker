@@ -2,7 +2,9 @@ from flask import Flask, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from dummy_config import AppConfig
-from dummy_models import db, User
+from dummy_models import db, Debtors, Lenders
+
+USER_TYPES = [Debtors, Lenders, Admins]
 
 app = Flask(__name__)
 app.config.from_object(AppConfig)
@@ -14,7 +16,6 @@ db.init_app(app)
 
 with app.app_context():
     db.create_all()
-
 
 def user_info(user):
     return {
@@ -40,14 +41,15 @@ def register_user():
     fullname = request.json["fullname"]
     username = request.json["username"]
     password = request.json["password"]
+    user_type = request.json["userType"]
 
-    user = db.session.scalar(db.select(User).filter_by(username=username))
+    user = db.session.scalar(db.select(USER_TYPES[user_type]).filter_by(username=username))
 
     if user is not None:
         return jsonify({"status": "error", "message": "User already exists."})
-
+    
     hashed_password = bcrypt.generate_password_hash(password)
-    new_user = User(fullname=fullname, username=username, password=hashed_password)
+    new_user = USER_TYPES[user_type](fullname=fullname, username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     
@@ -59,8 +61,9 @@ def register_user():
 def login_user():
     username = request.json["username"]
     password = request.json["password"]
+    user_type = request.json["userType"]
 
-    user = db.session.scalar(db.select(User).filter_by(username=username))
+    user = db.session.scalar(db.select(USER_TYPES[user_type]).filter_by(username=username))
 
     if user is None:
         return jsonify({"status": "error", "message": "Unauthorized."})
