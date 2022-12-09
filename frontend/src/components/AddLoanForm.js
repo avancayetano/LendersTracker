@@ -6,11 +6,14 @@ import {
   MdOutlineAddchart,
   MdOutlinePostAdd,
 } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 import Form from "./ui/Form";
 import AppMetaContext from "../context/app-meta-context";
 
 function AddLoanForm() {
+  const navigate = useNavigate();
+
   const appMetaContext = useContext(AppMetaContext);
   const [lenderContribPairs, setLenderContribPairs] = useState([]);
   const [principalAmt, setPrincipalAmt] = useState(0);
@@ -22,7 +25,7 @@ function AddLoanForm() {
   const withdrawalsPerMonthRef = useRef();
   const dateOfTransferRef = useRef();
   const proofOfTransferRef = useRef();
-  const lenderWhoTransferredRef = useRef();
+  const lwtRef = useRef();
   const suretyDebtorRef = useRef();
   const startPeriodRef = useRef();
   const contractSignedRef = useRef();
@@ -74,19 +77,31 @@ function AddLoanForm() {
   function submitHandler(event) {
     event.preventDefault();
 
+    const formData = new FormData();
+
     const debtor = debtorRef.current.value;
     const principalAmount = principalAmountRef.current.value;
     const interest = interestRef.current.value;
     const period = periodRef.current.value;
     const withdrawalsPerMonth = withdrawalsPerMonthRef.current.value;
     const dateOfTransfer = dateOfTransferRef.current.value;
-    const proofOfTransfer = proofOfTransferRef.current.value;
-    const lenderWhoTransferred = lenderWhoTransferredRef.current.value;
+
+    const lwt = lwtRef.current.value;
     const suretyDebtor = suretyDebtorRef.current.value;
     const startPeriod = startPeriodRef.current.value;
-    const contractSigned = contractSignedRef.current.value;
-    const ackReceipts = ackReceiptsRef.current.value;
-    const otherDocs = otherDocsRef.current.value;
+
+    // files
+    const proofOfTransfer = proofOfTransferRef.current.files[0];
+    const contractSigned = contractSignedRef.current.files[0];
+    const ackReceipts = ackReceiptsRef.current.files[0];
+    const otherDocs = otherDocsRef.current.files[0];
+
+    const files = {
+      proofOfTransfer,
+      contractSigned,
+      ackReceipts,
+      otherDocs,
+    };
 
     const content = {
       debtor,
@@ -95,16 +110,31 @@ function AddLoanForm() {
       period,
       withdrawalsPerMonth,
       dateOfTransfer,
-      proofOfTransfer,
-      lenderWhoTransferred,
+      lwt,
       suretyDebtor,
       startPeriod,
-      contractSigned,
-      ackReceipts,
-      otherDocs,
       lenderContribPairs,
     };
-    console.log(content);
+
+    for (const key in files) {
+      formData.append(key, files[key]);
+    }
+
+    formData.append("inputs", JSON.stringify(content));
+
+    fetch("/api/add-loan-transaction", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          navigate("/dashboard");
+        } else {
+          alert("Error.");
+        }
+      });
+
     closeHandler();
   }
 
@@ -266,6 +296,7 @@ function AddLoanForm() {
               </label>
               <input
                 className="w3-input w3-center w3-border"
+                multiple
                 type="file"
                 required
                 id="proof-transfer"
@@ -286,7 +317,7 @@ function AddLoanForm() {
                 type="text"
                 required
                 id="lender-transfer"
-                ref={lenderWhoTransferredRef}
+                ref={lwtRef}
               />
             </div>
             <div className="w3-half">
@@ -323,6 +354,7 @@ function AddLoanForm() {
               </label>
               <input
                 className="w3-input w3-center w3-border"
+                multiple
                 type="file"
                 id="contract-signed"
                 ref={contractSignedRef}
@@ -336,6 +368,7 @@ function AddLoanForm() {
               </label>
               <input
                 className="w3-input w3-center w3-border"
+                multiple
                 type="file"
                 id="ack-receipts"
                 ref={ackReceiptsRef}
@@ -350,6 +383,7 @@ function AddLoanForm() {
               </label>
               <input
                 className="w3-input w3-center w3-border"
+                multiple
                 type="file"
                 id="other-documents"
                 ref={otherDocsRef}

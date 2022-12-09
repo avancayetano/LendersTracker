@@ -170,13 +170,18 @@ def get_lenders_list():
         lenders.append(debtor)
     return jsonify(lenders)
 
-# # 4 get user loan transaction
-# @app.route("/api/add-loan-transaction", methods=["POST"])
-# def add_loan_transactions():
-#     # get request
-#     # return error or OK 
-#     ...
-#     return jsonify({"status": "OK", "message": "To be implemented."})
+# 4 get user loan transaction
+@app.route("/api/get-user-loan-transactions/", methods=["POST"])
+def get_user_loan_transactions():
+
+    user_id = session["user_id"]
+
+    # get request
+    loans = db.session.scalar(db.select(LoanLender, Loan).join(Loan.id))
+
+    # return error or OK 
+    ...
+    return jsonify({"status": "OK", "message": "To be implemented."})
 
 # # 5 get lender breakdown of loan transaction
 # @app.route("/api/add-loan-transaction", methods=["POST"])

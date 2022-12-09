@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlinePersonOutline } from "react-icons/md";
+import Select from "react-select";
 
 import Form from "./ui/Form";
 
@@ -11,7 +12,12 @@ function RegisterForm(props) {
   const usernameInputRef = useRef();
   const passwordInputRef = useRef();
   const confirmPasswordRef = useRef();
+  const userTypeInputRef = useRef();
 
+  const userTypeOptions = [
+    { value: "lender", label: "Lender" },
+    { value: "debtor", label: "Debtor" },
+  ];
   function submitHandler(event) {
     event.preventDefault();
 
@@ -20,7 +26,10 @@ function RegisterForm(props) {
       username: usernameInputRef.current.value,
       password: passwordInputRef.current.value,
       confirmPassword: confirmPasswordRef.current.value,
+      userType: userTypeInputRef.current.getValue()[0].value,
     };
+
+    console.log(userTypeInputRef);
 
     fetch("/api/register-user", {
       method: "POST",
@@ -87,7 +96,16 @@ function RegisterForm(props) {
           />
         </p>
         <p>
-          <button className="w3-btn w3-black">Register</button>
+          <div className="w3-half w3-padding-small">
+            <Select
+              options={userTypeOptions}
+              defaultValue={userTypeOptions[0]}
+              ref={userTypeInputRef}
+            />
+          </div>
+          <div className="w3-half w3-padding-small">
+            <button className="w3-btn w3-black">Register</button>
+          </div>
         </p>
       </form>
       <p className="w3-center">
