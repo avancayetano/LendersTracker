@@ -11,6 +11,7 @@ class Debtors(db.Model):
     fullname = db.Column(db.String(100), unique=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100), nullable=False)
+    loans = db.relationship('Loan', backref='debtor')
 
 class Lenders(db.Model):
     __tablename__ = "lenders"
@@ -28,16 +29,16 @@ class Admin(db.Model):
 
 class Loans(db.Model):
     __tablename__ = "loans"
-    # FK debtor_id
+    debtor_id = db.Column(db.String(32), db.ForeignKey('debtor.id'))
     id = db.Column(db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex)
     principal_amt = db.Column(db.Float, nullable=False)
     interest  = db.Column(db.Float, nullable=False)
     period = db.Column(db.Integer, nullable=True)
     wpm = db.Column(db.Integer, nullable=True)
     date_of_transfer = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    amortization = db.Column(db.Float, nullable=False)
+    # ??? amortization = db.Column(db.Float, nullable=False)
     # proof_of_transfer image/filesht
-    recipient = db.Column(db.String(25), nullable=False)
+    lwt = db.Column(db.String(25), nullable=False)
     surety_debtor = db.Column(db.String(25), nullable=False)
     start_period = db.Column(db.DateTime(timezone=True), server_default=func.now())
     contract_signed = db.Column(db.Boolean, server_default="FALSE", nullable=False)

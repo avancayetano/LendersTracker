@@ -89,19 +89,23 @@ def add_loan_transactions():
     period = request.json["period"]
     withdrawalsPerMonth = request.json["withdrawalsPerMonth"]
     dateOfTransfer = request.json["dateOfTransfer"]
-    proofOfTransfer = request.json["proofOfTransfer"]
-    recipient = request.json["recipient"]
+    # TBI proofOfTransfer = request.json["proofOfTransfer"]
+    lwt = request.json["lendorWhoTransferred"]
     suretyDebtor = request.json["suretyDebtor"]
     startPeriod = request.json["startPeriod"]
     contractSigned = request.json["contractSigned"]
     ackReceipts = request.json["ackReceipts"]
-    otherDocs = request.json["otherDocs"]
+    # TBI otherDocs = request.json["otherDocs"]
     lenderContribPairs = request.json["lenderContribPairs"]
 
     # get debtor id
     debtor_id = db.session.scalar(db.select(Debtors).filter_by(username=debtor))
 
     # link debtor id to new loan, add loan
+    new_loan = Loans(debtor_id=debtor_id, principal_amt=principalAmount, interest=interest,
+        period=period, wpm=withdrawalsPerMonth, date_of_transfer=dateOfTransfer, lwt=lwt, 
+        surety_debtor=suretyDebtor, start_period=startPeriod, contract_signed=contractSigned,
+        ack_receipt=ackReceipts)
 
     # link every lender to loan via LoanLender, add LoanLender
 
