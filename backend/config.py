@@ -1,4 +1,4 @@
-from dummy_models import db
+from models import db
 
 class AppConfig:
     SECRET_KEY = "SADSKAkfedsmfkjsfggsdmvffksdk"
