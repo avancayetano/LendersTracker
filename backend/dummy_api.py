@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from dummy_config import AppConfig
-from dummy_models import db, Debtors, Lenders
+from dummy_models import db, Debtors, Lenders, Loans
 
-USER_TYPES = [Debtors, Lenders, Admins]
+USER_TYPES = {"debtor": Debtors, "lender": Lenders}
 
 app = Flask(__name__)
 app.config.from_object(AppConfig)
@@ -47,6 +47,11 @@ def register_user():
 
     if user is not None:
         return jsonify({"status": "error", "message": "User already exists."})
+
+    user = db.session.scalar(db.select(USER_TYPES[user_type]).filter_by(fullname=fullname))
+
+    if user is not None:
+        return jsonify({"status": "error", "message": "User already exists."})
     
     hashed_password = bcrypt.generate_password_hash(password)
     new_user = USER_TYPES[user_type](fullname=fullname, username=username, password=hashed_password)
@@ -75,12 +80,131 @@ def login_user():
 
     return jsonify({"status": "OK", "message": user_info(user)})
 
+@app.route("/api/add-loan-transaction", methods=["POST"])
+def add_loan_transactions():
+    # get request
+    debtor = request.json["debtor"]
+    principalAmount = request.json["principalAmount"]
+    interest = request.json["interest"]
+    period = request.json["period"]
+    withdrawalsPerMonth = request.json["withdrawalsPerMonth"]
+    dateOfTransfer = request.json["dateOfTransfer"]
+    proofOfTransfer = request.json["proofOfTransfer"]
+    recipient = request.json["recipient"]
+    suretyDebtor = request.json["suretyDebtor"]
+    startPeriod = request.json["startPeriod"]
+    contractSigned = request.json["contractSigned"]
+    ackReceipts = request.json["ackReceipts"]
+    otherDocs = request.json["otherDocs"]
+    lenderContribPairs = request.json["lenderContribPairs"]
+
+    # get debtor id
+    debtor_id = db.session.scalar(db.select(Debtors).filter_by(username=debtor))
+
+    # link debtor id to new loan, add loan
+
+    # link every lender to loan via LoanLender, add LoanLender
+
+    # return error or OK 
+    ...
+    return jsonify({"status": "OK", "message": "To be implemented."})
+
+@app.route("/api/get-debtors-list", methods=["GET"])
+def get_debtors_list():
+    # return list of debtors
+    debtors_query = Debtors.query.all()
+    
+    debtors = []
+    for val in debtors_query:
+        debtor = dict()
+        debtor["id"] = val.id
+        debtor["username"] = val.username
+        debtors.append(debtor)
+
+    return jsonify(debtors)
+
+@app.route("/api/get-lenders-list", methods=["GET"])
+def get_lenders_list():
+    # return list of debtors
+    lenders_query = Lenders.query.all()
+    
+    lenders = []
+    for val in lenders_query:
+        debtor = dict()
+        debtor["id"] = val.id
+        debtor["username"] = val.username
+        lenders.append(debtor)
+    return jsonify(lenders)
+
+# # 4 get user loan transaction
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+
+# # 5 get lender breakdown of loan transaction
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+
+# # 6 get payments of loan transaction
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+
+# # 7 del loan transaction
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+
+# # 8 edit payment status
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+
+# # 9 
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+
+# # 10
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
+# # 11
+# @app.route("/api/add-loan-transaction", methods=["POST"])
+# def add_loan_transactions():
+#     # get request
+#     # return error or OK 
+#     ...
+#     return jsonify({"status": "OK", "message": "To be implemented."})
 
 @app.route("/api/logout-user", methods=["POST"])
 def logout_user():
     session.pop("user_id")
     session.clear()
     return jsonify({"status": "OK", "message": "Log out successful."})
+
 
 
 if __name__ == "__main__":
