@@ -62,13 +62,13 @@ class Loan(db.Model):
     wpm = db.Column(db.Integer, nullable=True)
     date_of_transfer = db.Column(db.DateTime(timezone=True), server_default=func.now())
     amortization = db.Column(db.Float, nullable=False)
-    proof_of_transfer = db.Column(db.String(32), nullable=False)
+    proof_of_transfer = db.Column(db.String(255), nullable=False)
     lwt = db.Column(db.String(25), nullable=False)
     surety_debtor = db.Column(db.String(25), nullable=False)
     start_period = db.Column(db.DateTime(timezone=True), server_default=func.now())
     contract_signed = db.Column(db.Boolean, server_default="FALSE", nullable=False)
     ack_receipt = db.Column(db.Boolean, server_default="FALSE", nullable=False)
-    other_docs = db.Column(db.String(32), nullable=False)
+    other_docs = db.Column(db.String(255), nullable=False)
 
     # relationships
     debtor_id = db.Column(db.String(32), db.ForeignKey("debtor.id", ondelete="CASCADE"))
