@@ -2,7 +2,14 @@ from flask import Flask, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from config import AppConfig
-from models import db, Debtor, Lender, Loan
+from models import db, Debtor, Lender, Loan, LoanLender
+from flask import send_from_directory
+from os import path
+from datetime import datetime
+
+basedir = path.abspath(path.dirname(__file__))
+uploads_path = path.join(basedir, 'files')
+
 
 USER_TYPES = {"debtor": Debtor, "lender": Lender}
 
@@ -32,7 +39,13 @@ def get_current_user():
     if not user_id:
         return jsonify({"status": "error", "message": "Unauthorized."})
     
-    user = db.session.scalar(db.select(User).filter_by(id=user_id))
+    user = db.session.scalar(db.select(Debtor).filter_by(id=user_id))
+
+    if user:
+        return jsonify({"status": "OK", "message": user_info(user)})
+
+    user = db.session.scalar(db.select(Lender).filter_by(id=user_id))
+    
     return jsonify({"status": "OK", "message": user_info(user)})
     
 
@@ -90,20 +103,41 @@ def add_loan_transactions():
     withdrawalsPerMonth = request.json["withdrawalsPerMonth"]
     dateOfTransfer = request.json["dateOfTransfer"]
     proofOfTransfer = request.json["proofOfTransfer"]
-    recipient = request.json["recipient"]
+    lwt = request.json["lendorWhoTransferred"]
     suretyDebtor = request.json["suretyDebtor"]
     startPeriod = request.json["startPeriod"]
     contractSigned = request.json["contractSigned"]
     ackReceipts = request.json["ackReceipts"]
     otherDocs = request.json["otherDocs"]
     lenderContribPairs = request.json["lenderContribPairs"]
+    
+    # download available files
+    user_id = session["user_id"]
+    pot_filename = "pot_" + proofOfTransfer.filename + str(user_id) + datetime.now().strftime("_%d%m%Y_%H%M%S")
+    od_filename = "pot_" + proofOfTransfer.filename + str(user_id) + datetime.now().strftime("_%d%m%Y_%H%M%S")
+    proofOfTransfer.save(path.join(uploads_path, pot_filename))
+    otherDocs.save(path.join(uploads_path, od_filename))
 
     # get debtor id
-    debtor_id = db.session.scalar(db.select(Debtors).filter_by(username=debtor))
+    debtor_id = db.session.scalar(db.select(Debtor).filter_by(username=debtor))
 
     # link debtor id to new loan, add loan
+    new_loan = Loan(debtor_id=debtor_id, principal_amt=principalAmount, interest=interest,
+        period=period, wpm=withdrawalsPerMonth, date_of_transfer=dateOfTransfer, proof_of_transfer=pot_filename, lwt=lwt, 
+        surety_debtor=suretyDebtor, start_period=startPeriod, contract_signed=contractSigned,
+        ack_receipt=ackReceipts, other_docs=od_filename)
+    db.session.add(new_loan)
+    db.session.commit()
 
     # link every lender to loan via LoanLender, add LoanLender
+    for val in lenderContribPairs:
+        lender_username = str(val["lender"])
+        contrib = float(val["contribution"])
+
+        lender = db.session.scalar(db.select(Lender).filter_by(username=lender_username))
+        new_loanLender = LoanLender(loan_id=new_loan.id, lender_id=lender.id,contribution=contrib)
+        db.session.add(new_loanLender)
+        db.session.commit()
 
     # return error or OK 
     ...
@@ -112,7 +146,7 @@ def add_loan_transactions():
 @app.route("/api/get-debtors-list", methods=["GET"])
 def get_debtors_list():
     # return list of debtors
-    debtors_query = Debtors.query.all()
+    debtors_query = Debtor.query.all()
     
     debtors = []
     for val in debtors_query:
@@ -126,7 +160,7 @@ def get_debtors_list():
 @app.route("/api/get-lenders-list", methods=["GET"])
 def get_lenders_list():
     # return list of debtors
-    lenders_query = Lenders.query.all()
+    lenders_query = Lender.query.all()
     
     lenders = []
     for val in lenders_query:
