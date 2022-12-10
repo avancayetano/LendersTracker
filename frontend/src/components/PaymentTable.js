@@ -8,7 +8,7 @@ import {
 import format from "../format";
 
 function PaymentTable(props) {
-  const order = ["period", "receiptDate", "amortization"];
+  const order = ["period", "paymentDate", "amortization"];
   const keys = order.concat(
     props.data[0].status.map((obj, idx) => "Status For " + obj.lender)
   );
@@ -32,8 +32,28 @@ function PaymentTable(props) {
   }
 
   function saveHandler() {
-    console.log(paymentData);
-    const response = window.confirm("Save changes?");
+    const confirmed = window.confirm("Save changes?");
+
+    if (confirmed) {
+      fetch("/api/edit-payment-status", {
+        method: "POST",
+        body: JSON.stringify({
+          loanId: props.loanId,
+          paymentData: paymentData,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            console.log(data.message);
+          } else {
+            alert("Error.");
+          }
+        });
+    }
   }
 
   return (

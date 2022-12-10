@@ -4,6 +4,7 @@ const transform = {
   cumulativeBalAmortization: "Cumulative Balance Amortization",
   cumulativeCompAmortization: "Cumulative Completed Amortization",
   otherDocs: "Other Documents",
+  lwt: "Lender Who Transferred",
   receiptDateAlt: "Date Expected To Receive",
 };
 

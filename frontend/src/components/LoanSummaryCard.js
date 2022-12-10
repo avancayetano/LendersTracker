@@ -1,21 +1,46 @@
+import { useNavigate } from "react-router-dom";
 import { MdOutlineDelete, MdOutlineStickyNote2 } from "react-icons/md";
+
 import format from "../format";
 
 function LoanSummaryCard(props) {
-  // todo: make a fixed order of labels
-  const tableLabels = Object.keys(props.data).reduce((prev, curr, idx, arr) => {
-    if (idx % props.columns === 0) {
-      prev.push([curr]);
-    } else {
-      prev[prev.length - 1].push(curr);
-    }
-    return prev;
-  }, []);
+  const navigate = useNavigate();
+
+  const keys = [
+    ["loanId", "status", "debtor", "principalAmount"],
+    ["interest", "period", "withdrawalsPerMonth", "amortizationPerWithdrawal"],
+    [
+      "amountAtEnd",
+      "completedAmortization",
+      "balanceAmortization",
+      "dateOfTransfer",
+    ],
+    ["proofOfTransfer", "lwt", "startPeriod", "endPeriod"],
+    ["suretyDebtor", "contractSigned", "ackReceipts", "otherDocs"],
+  ];
 
   function deleteHandler() {
-    const response = window.confirm(
+    const confirmed = window.confirm(
       "Are you sure you want to delete this Loan Transaction?"
     );
+    if (confirmed) {
+      fetch("/api/delete-loan-transaction", {
+        method: "POST",
+        body: JSON.stringify({ loanId: props.data.loanId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            console.log(data.message);
+            navigate("/dashboard/transactions");
+          } else {
+            alert("Error.");
+          }
+        });
+    }
   }
 
   return (
@@ -50,7 +75,7 @@ function LoanSummaryCard(props) {
       <div className="w3-responsive w3-small">
         <table className="w3-table text-overflow">
           <tbody>
-            {tableLabels.map((arr, i) => (
+            {keys.map((arr, i) => (
               <tr key={"row-" + i}>
                 {arr.map((label, j) => (
                   <td

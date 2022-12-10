@@ -9,13 +9,15 @@ db = SQLAlchemy()
 # https://docs.sqlalchemy.org/en/14/orm/cascades.html#using-foreign-key-on-delete-cascade-with-orm-relationships
 
 
+# Note: I removed the remarks field in the Payment model
+# All columns should be non-empty
+
+
 class Debtor(db.Model):
     __tablename__ = "debtor"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
-    )
-    fullname = db.Column(db.String(100), unique=True)
-    username = db.Column(db.String(100), unique=True)
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    fullname = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
     # relationships
@@ -24,11 +26,9 @@ class Debtor(db.Model):
 
 class Lender(db.Model):
     __tablename__ = "lender"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
-    )
-    fullname = db.Column(db.String(100), unique=True)
-    username = db.Column(db.String(100), unique=True)
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    fullname = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
     # relationships
@@ -41,11 +41,9 @@ class Lender(db.Model):
 
 class Admin(db.Model):
     __tablename__ = "admin"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
-    )
-    fullname = db.Column(db.String(100), unique=True)
-    username = db.Column(db.String(100), unique=True)
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    fullname = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
     # relationships
@@ -53,18 +51,22 @@ class Admin(db.Model):
 
 class Loan(db.Model):
     __tablename__ = "loan"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
-    )
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     principal_amt = db.Column(db.Float, nullable=False)
-    interest = db.Column(db.Float, nullable=False)
-    period = db.Column(db.Integer, nullable=True)
-    wpm = db.Column(db.Integer, nullable=True)
-    date_of_transfer = db.Column(db.DateTime(timezone=True), server_default=func.now())
-
+    interest = db.Column(
+        db.Float, nullable=False
+    )  # should be in percent like 10% not 0.1
+    period = db.Column(db.Integer, nullable=False)
+    wpm = db.Column(db.Integer, nullable=False)
+    date_of_transfer = db.Column(
+        db.DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    amortization = db.Column(db.Float, nullable=False)
     lwt = db.Column(db.String(100), nullable=False)
     surety_debtor = db.Column(db.String(100), nullable=False)
-    start_period = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    start_period = db.Column(
+        db.DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
     proof_of_transfer = db.Column(db.String(255), nullable=False)
     contract_signed = db.Column(db.String(255), server_default="FALSE", nullable=False)
@@ -72,7 +74,9 @@ class Loan(db.Model):
     other_docs = db.Column(db.String(255), nullable=False)
 
     # relationships
-    debtor_id = db.Column(db.String(32), db.ForeignKey("debtor.id", ondelete="CASCADE"))
+    debtor_id = db.Column(
+        db.Integer, db.ForeignKey("debtor.id", ondelete="CASCADE"), nullable=False
+    )
     debtor = db.relationship("Debtor", back_populates="loans")
 
     loan_lenders = db.relationship(
@@ -84,52 +88,52 @@ class Loan(db.Model):
 
 class LoanLender(db.Model):
     __tablename__ = "loanlender"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
-    )
-    contribution = db.Column(db.Integer, nullable=True)
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    contribution = db.Column(db.Integer, nullable=False)
 
     # relationships
-    loan_id = db.Column(db.String(32), db.ForeignKey("loan.id", ondelete="CASCADE"))
+    loan_id = db.Column(
+        db.Integer, db.ForeignKey("loan.id", ondelete="CASCADE"), nullable=False
+    )
     loan = db.relationship("Loan", back_populates="loan_lenders")
 
-    lender_id = db.Column(db.String(32), db.ForeignKey("lender.id", ondelete="CASCADE"))
+    lender_id = db.Column(
+        db.Integer, db.ForeignKey("lender.id", ondelete="CASCADE"), nullable=False
+    )
     lender = db.relationship("Lender", back_populates="loan_lenders")
 
 
 class Payment(db.Model):
     __tablename__ = "payment"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    period = db.Column(db.Integer, nullable=False)
+    payment_date = db.Column(
+        db.DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    period = db.Column(db.Integer, nullable=True)
-    payment_date = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    status = db.Column(db.String(15), nullable=False)
-    remarks = db.Column(db.String(255))
 
     # relationships
-    loan_id = db.Column(db.String(32), db.ForeignKey("loan.id", ondelete="CASCADE"))
+    loan_id = db.Column(
+        db.Integer, db.ForeignKey("loan.id", ondelete="CASCADE"), nullable=False
+    )
     loan = db.relationship("Loan", back_populates="payments")
 
-    payment_lenders = db.relationship(
-        "PaymentLender", back_populates="payment", uselist=False
-    )
+    payment_lenders = db.relationship("PaymentLender", back_populates="payment")
 
 
 class PaymentLender(db.Model):
     __tablename__ = "paymentlender"
-    id = db.Column(
-        db.String(32), primary_key=True, unique=True, default=lambda: uuid4().hex
-    )
+    id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
 
-    pay_index = db.Column(db.Integer, nullable=True)
+    pay_index = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), nullable=False)
 
     # relationships
     payment_id = db.Column(
-        db.String(32), db.ForeignKey("payment.id", ondelete="CASCADE")
+        db.Integer, db.ForeignKey("payment.id", ondelete="CASCADE"), nullable=False
     )
     payment = db.relationship("Payment", back_populates="payment_lenders")
 
-    lender_id = db.Column(db.String(32), db.ForeignKey("lender.id", ondelete="CASCADE"))
+    lender_id = db.Column(
+        db.Integer, db.ForeignKey("lender.id", ondelete="CASCADE"), nullable=False
+    )
     lender = db.relationship("Lender", back_populates="payment_lenders")

@@ -127,7 +127,10 @@ function AddLoanForm() {
     const dateOfTransfer = dateOfTransferRef.current.value;
 
     const lwt = lwtRef.current.getValue()[0].value;
-    const suretyDebtor = suretyDebtorRef.current.getValue()[0].value;
+    const suretyDebtor =
+      suretyDebtorRef.current.getValue().length > 0
+        ? suretyDebtorRef.current.getValue()[0].value
+        : "";
     const startPeriod = startPeriodRef.current.value;
 
     // files
@@ -229,6 +232,7 @@ function AddLoanForm() {
                     <input
                       className="w3-input w3-center w3-border"
                       type="number"
+                      step="0.01"
                       placeholder="Contribution"
                       required
                       onChange={(event) => {
@@ -267,6 +271,7 @@ function AddLoanForm() {
               <input
                 className="w3-input w3-center w3-border"
                 type="number"
+                step="0.01"
                 disabled
                 id="amount"
                 value={principalAmt}
@@ -280,6 +285,7 @@ function AddLoanForm() {
               <input
                 className="w3-input w3-center w3-border"
                 type="number"
+                step="0.01"
                 required
                 id="interest"
                 ref={interestRef}
@@ -294,6 +300,7 @@ function AddLoanForm() {
               <input
                 className="w3-input w3-center w3-border"
                 type="number"
+                step="0.01"
                 required
                 id="period"
                 ref={periodRef}
@@ -309,6 +316,7 @@ function AddLoanForm() {
               <input
                 className="w3-input w3-center w3-border"
                 type="number"
+                step="0.01"
                 required
                 id="withdrawals-per-month"
                 ref={withdrawalsPerMonthRef}
