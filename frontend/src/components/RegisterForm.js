@@ -95,7 +95,7 @@ function RegisterForm(props) {
             ref={confirmPasswordRef}
           />
         </p>
-        <p>
+        <div>
           <div className="w3-half w3-padding-small">
             <Select
               options={userTypeOptions}
@@ -106,7 +106,7 @@ function RegisterForm(props) {
           <div className="w3-half w3-padding-small">
             <button className="w3-btn w3-black">Register</button>
           </div>
-        </p>
+        </div>
       </form>
       <p className="w3-center">
         <span>Already have an account? </span>

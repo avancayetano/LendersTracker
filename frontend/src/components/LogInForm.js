@@ -71,7 +71,7 @@ function LogInForm(props) {
           />
         </p>
 
-        <p>
+        <div>
           <div className="w3-half w3-padding-small">
             <Select
               options={userTypeOptions}
@@ -82,7 +82,7 @@ function LogInForm(props) {
           <div className="w3-half w3-padding-small">
             <button className="w3-btn w3-black">Log In</button>
           </div>
-        </p>
+        </div>
       </form>
       <p className="w3-center">
         <span>Don't have an account yet? </span>

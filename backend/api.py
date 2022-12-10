@@ -6,9 +6,9 @@ from models import db, Debtor, Lender, Loan, LoanLender
 from flask import send_from_directory
 from os import path
 from datetime import datetime
-
-basedir = path.abspath(path.dirname(__file__))
-uploads_path = path.join(basedir, "files")
+from werkzeug.utils import secure_filename
+import json
+import os
 
 
 USER_TYPES = {"debtor": Debtor, "lender": Lender}
@@ -100,47 +100,52 @@ def login_user():
     return jsonify({"status": "OK", "message": user_info(user)})
 
 
+def allowed_file(filename):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
+    )
+
+
 @app.route("/api/add-loan-transaction", methods=["POST"])
 def add_loan_transactions():
     # get request
-    # change code below
-    # can access uploaded files via request.files
-    # file inputs are: 1) proof of transfer 2) contract signed 3) ackReceipts, and 4) otherDocs
-    # can access the non-file inputs via request.form["inputs"] (u need to parse this JSON)
-    debtor = request.json["debtor"]
-    principalAmount = request.json["principalAmount"]
-    interest = request.json["interest"]
-    period = request.json["period"]
-    withdrawalsPerMonth = request.json["withdrawalsPerMonth"]
-    dateOfTransfer = request.json["dateOfTransfer"]
-    proofOfTransfer = request.json["proofOfTransfer"]
-    lwt = request.json["lwt"]
-    suretyDebtor = request.json["suretyDebtor"]
-    startPeriod = request.json["startPeriod"]
-    contractSigned = request.json["contractSigned"]
-    ackReceipts = request.json["ackReceipts"]
-    otherDocs = request.json["otherDocs"]
-    lenderContribPairs = request.json["lenderContribPairs"]
+
+    files = request.files
+    inputs = json.loads(request.form["inputs"])
+
+    # inputs
+    debtor = inputs["debtor"]
+    principalAmount = float(inputs["principalAmount"])
+    interest = float(inputs["interest"])
+    period = int(inputs["period"])
+    withdrawalsPerMonth = int(inputs["withdrawalsPerMonth"])
+    dateOfTransfer = datetime.strptime(inputs["dateOfTransfer"], "%Y-%m-%d")
+    lwt = inputs["lwt"]
+    suretyDebtor = inputs["suretyDebtor"]
+    startPeriod = datetime.strptime(inputs["startPeriod"], "%Y-%m-%d")
+    lenderContribPairs = inputs["lenderContribPairs"]
+
+    # computed values
 
     # download available files
     user_id = session["user_id"]
-    pot_filename = (
-        "pot_"
-        + proofOfTransfer.filename
-        + str(user_id)
-        + datetime.now().strftime("_%d%m%Y_%H%M%S")
-    )
-    od_filename = (
-        "pot_"
-        + proofOfTransfer.filename
-        + str(user_id)
-        + datetime.now().strftime("_%d%m%Y_%H%M%S")
-    )
-    proofOfTransfer.save(path.join(uploads_path, pot_filename))
-    otherDocs.save(path.join(uploads_path, od_filename))
+
+    filenames = {}
+    for file in files:
+        filename = "{}-{}-{}-{}".format(
+            user_id,
+            file,
+            datetime.now().strftime("%d%m%Y_%H%M%S"),
+            files[file].filename,
+        )
+        if files[file] and allowed_file(filename):
+            filename = secure_filename(filename)
+            filenames[file] = filename
+            files[file].save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
 
     # get debtor id
-    debtor_id = db.session.scalar(db.select(Debtor).filter_by(username=debtor))
+    debtor_id = db.session.scalar(db.select(Debtor).filter_by(fullname=debtor)).id
 
     # link debtor id to new loan, add loan
     new_loan = Loan(
@@ -150,24 +155,24 @@ def add_loan_transactions():
         period=period,
         wpm=withdrawalsPerMonth,
         date_of_transfer=dateOfTransfer,
-        proof_of_transfer=pot_filename,
+        proof_of_transfer=filenames["proofOfTransfer"],
         lwt=lwt,
         surety_debtor=suretyDebtor,
         start_period=startPeriod,
-        contract_signed=contractSigned,
-        ack_receipt=ackReceipts,
-        other_docs=od_filename,
+        contract_signed=filenames["contractSigned"],
+        ack_receipt=filenames["ackReceipts"],
+        other_docs=filenames["otherDocs"],
     )
     db.session.add(new_loan)
     db.session.commit()
 
     # link every lender to loan via LoanLender, add LoanLender
     for val in lenderContribPairs:
-        lender_username = str(val["lender"])
+        lender_fullname = str(val["lender"])
         contrib = float(val["contribution"])
 
         lender = db.session.scalar(
-            db.select(Lender).filter_by(username=lender_username)
+            db.select(Lender).filter_by(fullname=lender_fullname)
         )
         new_loanLender = LoanLender(
             loan_id=new_loan.id, lender_id=lender.id, contribution=contrib
@@ -192,7 +197,7 @@ def get_debtors_list():
         debtor["fullname"] = val.fullname
         debtors.append(debtor)
 
-    return jsonify(debtors)
+    return jsonify({"status": "OK", "message": debtors})
 
 
 @app.route("/api/get-lenders-list", methods=["GET"])
@@ -206,7 +211,7 @@ def get_lenders_list():
         debtor["id"] = val.id
         debtor["fullname"] = val.fullname
         lenders.append(debtor)
-    return jsonify(lenders)
+    return jsonify({"status": "OK", "message": lenders})
 
 
 # 4 get user loan transaction

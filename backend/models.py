@@ -61,13 +61,14 @@ class Loan(db.Model):
     period = db.Column(db.Integer, nullable=True)
     wpm = db.Column(db.Integer, nullable=True)
     date_of_transfer = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    amortization = db.Column(db.Float, nullable=False)
-    proof_of_transfer = db.Column(db.String(255), nullable=False)
-    lwt = db.Column(db.String(25), nullable=False)
-    surety_debtor = db.Column(db.String(25), nullable=False)
+
+    lwt = db.Column(db.String(100), nullable=False)
+    surety_debtor = db.Column(db.String(100), nullable=False)
     start_period = db.Column(db.DateTime(timezone=True), server_default=func.now())
-    contract_signed = db.Column(db.Boolean, server_default="FALSE", nullable=False)
-    ack_receipt = db.Column(db.Boolean, server_default="FALSE", nullable=False)
+
+    proof_of_transfer = db.Column(db.String(255), nullable=False)
+    contract_signed = db.Column(db.String(255), server_default="FALSE", nullable=False)
+    ack_receipt = db.Column(db.String(255), server_default="FALSE", nullable=False)
     other_docs = db.Column(db.String(255), nullable=False)
 
     # relationships

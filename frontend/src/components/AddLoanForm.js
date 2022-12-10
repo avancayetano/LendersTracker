@@ -7,6 +7,7 @@ import {
   MdOutlinePostAdd,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 
 import Form from "./ui/Form";
 import AppMetaContext from "../context/app-meta-context";
@@ -17,6 +18,9 @@ function AddLoanForm() {
   const appMetaContext = useContext(AppMetaContext);
   const [lenderContribPairs, setLenderContribPairs] = useState([]);
   const [principalAmt, setPrincipalAmt] = useState(0);
+
+  const [debtorsList, setDebtorsList] = useState([]);
+  const [lendersList, setLendersList] = useState([]);
 
   const debtorRef = useRef();
   const principalAmountRef = useRef();
@@ -58,12 +62,48 @@ function AddLoanForm() {
     [lenderContribPairs]
   );
 
+  useEffect(() => {
+    fetch("/api/get-debtors-list")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          setDebtorsList(
+            data.message.map((obj) => {
+              return { value: obj.fullname, label: obj.fullname };
+            })
+          );
+        } else {
+          alert("Error.");
+        }
+      });
+    fetch("/api/get-lenders-list")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "OK") {
+          setLendersList(
+            data.message.map((obj) => {
+              return { value: obj.fullname, label: obj.fullname };
+            })
+          );
+        } else {
+          alert("Error.");
+        }
+      });
+  }, []);
+
   // Note to self: this can still be optimized using an array of Refs instead of event listening
-  function editLenderContribPair(event, idx, editField) {
-    event.preventDefault();
+  function editLenderInLenderContribPair(value, idx) {
     setLenderContribPairs((contribPairs) => {
       const newContribPairs = structuredClone(contribPairs);
-      newContribPairs[idx][editField] = event.target.value;
+      newContribPairs[idx].lender = value.value;
+      return newContribPairs;
+    });
+  }
+
+  function editContribInLenderContribPair(event, idx) {
+    setLenderContribPairs((contribPairs) => {
+      const newContribPairs = structuredClone(contribPairs);
+      newContribPairs[idx].contribution = event.target.value;
       return newContribPairs;
     });
   }
@@ -79,15 +119,15 @@ function AddLoanForm() {
 
     const formData = new FormData();
 
-    const debtor = debtorRef.current.value;
+    const debtor = debtorRef.current.getValue()[0].value;
     const principalAmount = principalAmountRef.current.value;
     const interest = interestRef.current.value;
     const period = periodRef.current.value;
     const withdrawalsPerMonth = withdrawalsPerMonthRef.current.value;
     const dateOfTransfer = dateOfTransferRef.current.value;
 
-    const lwt = lwtRef.current.value;
-    const suretyDebtor = suretyDebtorRef.current.value;
+    const lwt = lwtRef.current.getValue()[0].value;
+    const suretyDebtor = suretyDebtorRef.current.getValue()[0].value;
     const startPeriod = startPeriodRef.current.value;
 
     // files
@@ -154,12 +194,11 @@ function AddLoanForm() {
             <label htmlFor="debtor" className="w3-small text-overflow">
               Debtor
             </label>
-            <input
-              className="w3-input w3-center w3-border"
-              type="text"
-              required
+            <Select
+              options={debtorsList}
               id="debtor"
               ref={debtorRef}
+              required={true}
             />
           </div>
           <div className="w3-row icon-cont icon-cont-center w3-center w3-padding w3-small">
@@ -172,15 +211,17 @@ function AddLoanForm() {
             {lenderContribPairs.map((obj, idx) => (
               <div className="w3-row" key={"lender-contrib-" + idx}>
                 <div className="w3-twothird">
-                  <input
-                    className="w3-input w3-center w3-border"
-                    type="text"
-                    placeholder="Lender Name"
+                  <Select
+                    options={lendersList}
+                    value={
+                      lendersList.filter(
+                        (lenderObj) => lenderObj.value === obj.lender
+                      )[0]
+                    }
                     onChange={(event) => {
-                      editLenderContribPair(event, idx, "lender");
+                      editLenderInLenderContribPair(event, idx);
                     }}
-                    value={obj.lender}
-                    required
+                    required={true}
                   />
                 </div>
                 <div className="w3-third">
@@ -191,7 +232,7 @@ function AddLoanForm() {
                       placeholder="Contribution"
                       required
                       onChange={(event) => {
-                        editLenderContribPair(event, idx, "contribution");
+                        editContribInLenderContribPair(event, idx);
                       }}
                       value={obj.contribution}
                     />
@@ -312,10 +353,9 @@ function AddLoanForm() {
               >
                 Lender who transferred
               </label>
-              <input
-                className="w3-input w3-center w3-border"
-                type="text"
-                required
+              <Select
+                options={lendersList}
+                required={true}
                 id="lender-transfer"
                 ref={lwtRef}
               />
@@ -324,9 +364,8 @@ function AddLoanForm() {
               <label htmlFor="surety-debtor" className="w3-small text-overflow">
                 Surety debtor
               </label>
-              <input
-                className="w3-input w3-center w3-border"
-                type="text"
+              <Select
+                options={debtorsList}
                 id="surety-debtor"
                 ref={suretyDebtorRef}
               />

@@ -1,5 +1,6 @@
 from models import db
 
+
 class AppConfig:
     SECRET_KEY = "SADSKAkfedsmfkjsfggsdmvffksdk"
 
@@ -13,3 +14,6 @@ class AppConfig:
 
     SESSION_SQLALCHEMY = db
     SESSION_SQLALCHEMY_TABLE = "session"
+
+    UPLOAD_FOLDER = "./files/"
+    ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif"}
