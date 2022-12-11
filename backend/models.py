@@ -61,7 +61,8 @@ class Loan(db.Model):
     date_of_transfer = db.Column(
         db.DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    amortization = db.Column(db.Float, nullable=False)
+    # COMPUTED VALUE
+    # amortization = db.Column(db.Float, nullable=False)
     lwt = db.Column(db.String(100), nullable=False)
     surety_debtor = db.Column(db.String(100), nullable=False)
     start_period = db.Column(

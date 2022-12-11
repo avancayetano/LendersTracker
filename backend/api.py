@@ -149,8 +149,7 @@ def add_loan_transactions():
     # get debtor id
     debtor_id = db.session.scalar(db.select(Debtor).filter_by(fullname=debtor)).id
 
-    # Compute values
-    amortization = 0
+    # amortization not included, computed in query
 
     # link debtor id to new loan, add loan
     new_loan = Loan(
@@ -158,7 +157,6 @@ def add_loan_transactions():
         principal_amt=principalAmount,
         interest=interest,
         period=period,
-        amortization=amortization,
         wpm=withdrawalsPerMonth,
         date_of_transfer=dateOfTransfer,
         proof_of_transfer=filenames.get("proofOfTransfer", ""),
@@ -227,104 +225,52 @@ def get_lenders_list():
 def get_user_loan_transactions():
     user_id = session["user_id"]
 
+    loan_id = request.args.get('loanId')
+    if loan_id:
+        print("PARAMETER LOANID ACCEPTED:", loan_id)
+    
+
     # get request
-    loans = db.session.scalar(db.select(Loan).join(Loan.loan_lenders))
-    print("------------------------------------------------")
-    print(loans)
-    print("----------------------------------------")
-    # format guide
-    dummy_data = [
-        {
-            "loanId": 1,
-            "status": "Ongoing",
-            "debtor": "Debtor1",
-            "principalAmount": 10000,
-            "interest": 0.1,
-            "period": 6,
-            "withdrawalsPerMonth": 2,
-            "amortizationPerWithdrawal": 1333.33,
-            "amountAtEnd": 16000,
-            "completedAmortization": 5333.33,
-            "balanceAmortization": 10666.67,
-            "dateOfTransfer": "6 Oct 2022",
-            "proofOfTransfer": "url",
-            "lwt": "Lender1",
-            "startPeriod": "15 Oct 2022",
-            "endPeriod": "30 Mar 2023",
-            "suretyDebtor": "Debtor123",
-            "contractSigned": "url",
-            "ackReceipts": "url",
-            "otherDocs": "url",
-        },
-        {
-            "loanId": 2,
-            "status": "Ongoing",
-            "debtor": "Debtor1",
-            "principalAmount": 30000,
-            "interest": 0.1,
-            "period": 6,
-            "withdrawalsPerMonth": 2,
-            "amortizationPerWithdrawal": 1333.33,
-            "amountAtEnd": 16000,
-            "completedAmortization": 5333.33,
-            "balanceAmortization": 10666.67,
-            "dateOfTransfer": "6 Oct 2022",
-            "proofOfTransfer": "url",
-            "lwt": "Lender1",
-            "startPeriod": "15 Oct 2022",
-            "endPeriod": "30 Mar 2023",
-            "suretyDebtor": "Debtor123",
-            "contractSigned": "url",
-            "ackReceipts": "url",
-            "otherDocs": "url",
-        },
-    ]
+    loan_lenders = db.session.query(LoanLender).filter(LoanLender.lender_id==user_id).all()
+    data = []
+    print("XDDDDDDDDDDDXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+    print(loan_lenders)
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    for ind,loan_lender in enumerate(loan_lenders):
+        print("Loan:",ind)
+        loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
+        for loan in loans:
+            if loan_id and (int(loan.id) != int(loan_id)):
+                continue
+            txn = {
+                "loanId": loan.id,
+                # "status": "Ongoing",
+                "debtor": loan.debtor.username,
+                "principalAmount": loan.principal_amt,
+                "interest": loan.interest,
+                "period": loan.period,
+                "withdrawalsPerMonth": loan.wpm,
+                # "amortizationPerWithdrawal": 1333.33,
+                # "amountAtEnd": 16000,
+                # "completedAmortization": 5333.33,
+                # "balanceAmortization": 10666.67,
+                "dateOfTransfer": loan.date_of_transfer,
+                "proofOfTransfer": loan.proof_of_transfer,
+                "lwt": loan.lwt,
+                "startPeriod": loan.start_period,
+                # "endPeriod": "30 Mar 2023",
+                "suretyDebtor": loan.surety_debtor,
+                "contractSigned": loan.contract_signed,
+                "ackReceipts": loan.ack_receipt,
+                "otherDocs": loan.other_docs,
+            }
+            data.append(txn)
+    print("FINAL DATA:\n", data)
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
     # return error or OK
     ...
-    return jsonify({"status": "OK", "message": dummy_data})
-
-
-# 4.5 get a user loan transaction. PLEASE DO THIS
-# get a specific loan transaction info using its ID
-@app.route("/api/get-loan-transaction/<int:loanId>", methods=["GET"])
-def get_loan_transaction(loanId):
-    user_id = session["user_id"]
-
-    # get request
-    loans = db.session.scalar(db.select(Loan).join(Loan.loan_lenders))
-    print("------------------------------------------------")
-    print(loanId)
-    print(loans)
-    print("----------------------------------------")
-    # format guide
-    dummy_data = {
-        "loanId": 1,
-        "status": "Ongoing",
-        "debtor": "Debtor1",
-        "principalAmount": 10000,
-        "interest": 0.1,
-        "period": 6,
-        "withdrawalsPerMonth": 2,
-        "amortizationPerWithdrawal": 1333.33,
-        "amountAtEnd": 16000,
-        "completedAmortization": 5333.33,
-        "balanceAmortization": 10666.67,
-        "dateOfTransfer": "6 Oct 2022",
-        "proofOfTransfer": "url",
-        "lwt": "Lender1",
-        "startPeriod": "15 Oct 2022",
-        "endPeriod": "30 Mar 2023",
-        "suretyDebtor": "Debtor123",
-        "contractSigned": "url",
-        "ackReceipts": "url",
-        "otherDocs": "url",
-    }
-
-    # return error or OK
-    ...
-    return jsonify({"status": "OK", "message": dummy_data})
-
+    return jsonify({"status": "OK", "message": data})
 
 # 5 get lender breakdown of loan transaction
 @app.route("/api/get-lender-breakdown/<int:loanId>", methods=["GET"])
@@ -426,16 +372,14 @@ def delete_loan_transactions():
 
     # mas safe if nasa payload yung loanId kaysa sa URL mismo
     loanId = request.json.get("loanId", None)
+    
+    loan = db.session.get(Loan, loanId)
+    if not loan:
+        return jsonify({"status": "OK", "message": "No loan id exists."})
 
-    print(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
-    print(loanId)
-    print(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+    db.session.delete(loan)
+    db.session.commit()
 
-    if not None:
-        # delete mo na lang dito, ikaw na bahala
-        pass
-
-    ...
     return jsonify({"status": "OK", "message": "Successfully deleted."})
 
 
