@@ -18,10 +18,10 @@ function LoanDetailsPage() {
   const [payments, setPayments] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/get-loan-transaction/${loanId}`)
+    fetch(`/api/get-user-loan-transactions/${loanId}`)
       .then((res) => res.json())
       .then((data) => {
-        setLoanTransaction(data.message);
+        setLoanTransaction(data.message[0]);
       });
 
     fetch(`/api/get-lender-breakdown/${loanId}`)
