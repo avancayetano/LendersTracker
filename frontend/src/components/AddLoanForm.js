@@ -242,7 +242,7 @@ function AddLoanForm() {
                     />
                   </div>
                   <div
-                    className="w3-quarter w3-button w3-border w3-center"
+                    className="w3-quarter w3-button w3-border w3-center w3-hover-pale-red"
                     title="Remove entry."
                     onClick={() => removeLenderContribPair(idx)}
                   >
@@ -254,7 +254,7 @@ function AddLoanForm() {
           </div>
 
           <div
-            className="w3-show icon-cont icon-cont-center w3-center w3-button w3-light-grey w3-padding-small w3-small"
+            className="w3-show w3-indigo w3-hover-shadow icon-cont icon-cont-center w3-center icon-btn w3-padding-small w3-small"
             onClick={addLenderContribPair}
           >
             <MdOutlineAdd />
@@ -439,7 +439,7 @@ function AddLoanForm() {
           </div>
 
           <p className="w3-center">
-            <button className="w3-btn w3-black w3-border">Submit</button>
+            <button className="w3-btn w3-teal w3-border">Submit</button>
           </p>
         </form>
       </Form>

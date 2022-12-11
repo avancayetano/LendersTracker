@@ -29,16 +29,16 @@ function SideBar() {
         }
       >
         <div
-          className="w3-bar-item w3-button w3-center w3-light-grey"
+          className="w3-bar-item icon-btn w3-center w3-hover-light-grey"
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont icon-cont-center w3-padding-small">
             <MdOutlineClose className="w3-large" />
           </div>
         </div>
-        <div className="w3-container w3-bar-item w3-border-bottom w3-center">
+        <div className="w3-container w3-bar-item w3-center w3-border-top w3-border-bottom w3-padding-16">
           <div className="icon-cont">
-            <MdAccountCircle className="w3-jumbo w3-onethird" />
+            <MdAccountCircle className="w3-jumbo w3-onethird w3-text-brown" />
             <span className="w3-twothird w3-padding-small">
               <div className="w3-large w3-left-align">
                 {userAuthContext.fullname}
@@ -51,7 +51,7 @@ function SideBar() {
         </div>
         <Link
           to="/dashboard"
-          className="w3-bar-item w3-button"
+          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont">
@@ -60,20 +60,20 @@ function SideBar() {
           </div>
         </Link>
         <div
-          className="w3-bar-item w3-button"
+          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
           onClick={() => {
             appMetaContext.setIsSideBarOpen(false);
             appMetaContext.setIsAddLoanFormOpen(true);
           }}
         >
-          <div className="icon-cont">
+          <div className="icon-cont full-height">
             <MdOutlinePostAdd />
             <span className="margin-left">Add Loan Transaction</span>
           </div>
         </div>
         <Link
           to="/dashboard/transactions"
-          className="w3-bar-item w3-button"
+          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont">
@@ -83,7 +83,7 @@ function SideBar() {
         </Link>
         <Link
           to="/dashboard/others-transactions"
-          className="w3-bar-item w3-button"
+          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
           onClick={() => appMetaContext.setIsSideBarOpen(false)}
         >
           <div className="icon-cont">

@@ -11,10 +11,12 @@ function NavBar() {
   return (
     <>
       <div className="w3-bar w3-border w3-white w3-center w3-display-container">
-        <h3>Lenders' Tracker</h3>
+        <h3>
+          <b>Lenders' Tracker</b>
+        </h3>
         {userAuthContext.isAuthenticated && (
           <div
-            className="w3-display-left icon-btn w3-bar-item"
+            className="w3-display-left icon-btn w3-bar-item w3-hover-light-grey"
             onClick={() => appMetaContext.setIsSideBarOpen(true)}
           >
             <h3 className="icon-cont">

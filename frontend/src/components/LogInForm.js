@@ -87,7 +87,7 @@ function LogInForm(props) {
       <p className="w3-center">
         <span>Don't have an account yet? </span>
         <button
-          className="w3-btn w3-blaack w3-border"
+          className="w3-btn w3-border"
           onClick={() => props.setFormType("register")}
         >
           Register instead.

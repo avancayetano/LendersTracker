@@ -42,7 +42,7 @@ function DashboardPage(props) {
         </h4>
         <h4>Welcome, {userAuthContext.fullname}!</h4>
         {Object.keys(balanceAmortizationBreakdown).length > 0 && (
-          <div className="w3-container w3-display-container w3-card w3-margin-top">
+          <div className="w3-container w3-display-container w3-border w3-hover-shadow w3-round-xlarge w3-margin-top">
             <div className="w3-half full-height">
               <div className="w3-margin">
                 <Table
@@ -50,6 +50,7 @@ function DashboardPage(props) {
                   title="Cumulative Balance Amortization"
                   data={balanceAmortizationBreakdown.breakdown}
                   keys={["debtor", "cumulativeBal"]}
+                  color="w3-pink"
                 />
               </div>
             </div>
@@ -63,6 +64,7 @@ function DashboardPage(props) {
                     "cumulativeBalAmortization",
                     "cumulativeCompAmortization",
                   ]}
+                  color="w3-deep-purple"
                 />
               </div>
             </div>
@@ -94,6 +96,7 @@ function DashboardPage(props) {
               "balanceAmortization",
               "paymentDate",
             ]}
+            color="w3-teal"
           />
         )}
       </div>
