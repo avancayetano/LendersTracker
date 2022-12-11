@@ -8,8 +8,10 @@ const transform = {
   receiptDateAlt: "Date Expected To Receive",
 };
 
-function format(value, isLabel = false) {
-  if (isLabel) {
+function format(value, isLabel = false, isUrl = false) {
+  if (isUrl) {
+    return `/${value}`;
+  } else if (isLabel) {
     return transform.hasOwnProperty(value)
       ? transform[value]
       : value.replace(/(^[a-z])|([A-Z])/g, (x, p1, p2) =>

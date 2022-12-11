@@ -30,8 +30,8 @@ function Table(props) {
   }, [sortBy, isAscending]);
 
   return (
-    <div className="w3-card w3-section loan-summary-max-height">
-      <div className="w3-display-container w3-row w3-dark-grey">
+    <div className="w3-section loan-summary-max-height w3-border w3-hover-shadow w3-round-xlarge">
+      <div className={"w3-display-container w3-row " + props.color}>
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <props.icon />
           <span className="margin-left">{props.title}</span>

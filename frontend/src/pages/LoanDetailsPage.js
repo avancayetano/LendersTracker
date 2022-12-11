@@ -52,6 +52,7 @@ function LoanDetailsPage() {
               data={loanTransaction}
               clickable={false}
               columns={4}
+              color="w3-teal"
             />
           </div>
         )}
@@ -70,6 +71,7 @@ function LoanDetailsPage() {
                   "completedAmortization",
                   "balanceAmortization",
                 ]}
+                color="w3-blue"
               />
             </span>
             <span className="w3-mobile w3-col s4 m3 l2">
@@ -86,7 +88,7 @@ function LoanDetailsPage() {
 
         {payments.length > 0 && (
           <div className="w3-row">
-            <PaymentTable data={payments} loanId={loanId} />
+            <PaymentTable data={payments} loanId={loanId} color="w3-green" />
           </div>
         )}
       </div>

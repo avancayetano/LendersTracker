@@ -25,10 +25,6 @@
   cursor: pointer;
 }
 
-.icon-btn:hover {
-  background-color: lightgray;
-}
-
 .icon-cont {
   display: flex;
   align-items: center;
@@ -95,7 +91,12 @@
   padding: 0px;
 }
 
-.form-max-height {
+.form-max-height-1 {
+  max-height: 75%;
+  overflow-y: visible;
+}
+
+.form-max-height-2 {
   max-height: 75%;
   overflow-y: auto;
 }
@@ -178,4 +179,8 @@ select {
 .centered {
   margin: auto !important;
   float: unset !important;
+}
+
+.no-text-deco {
+  text-decoration: none;
 }

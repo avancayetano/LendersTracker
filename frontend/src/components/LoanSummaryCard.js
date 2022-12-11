@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDelete, MdOutlineStickyNote2 } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 import format from "../format";
 
@@ -43,14 +44,21 @@ function LoanSummaryCard(props) {
     }
   }
 
+  const urlLabels = [
+    "proofOfTransfer",
+    "contractSigned",
+    "ackReceipts",
+    "otherDocs",
+  ];
+
   return (
     <div
       className={
-        "w3-card w3-section loan-summary-max-height" +
-        (props.clickable ? " clickable w3-hover-light-grey" : "")
+        "w3-border w3-hover-shadow w3-round-xlarge w3-section loan-summary-max-height " +
+        (props.clickable ? " clickable" : "")
       }
     >
-      <div className="w3-display-container w3-row w3-dark-grey">
+      <div className={"w3-display-container w3-row " + props.color}>
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           {!props.clickable && (
             <>
@@ -58,7 +66,7 @@ function LoanSummaryCard(props) {
               <span className="margin-left">Loan Summary</span>
               <span className="w3-display-right">
                 <button
-                  className={"w3-button w3-hover-red w3-red"}
+                  className={"w3-button w3-hover-red w3-red w3-hover-shadow"}
                   onClick={deleteHandler}
                 >
                   <div className="icon-cont">
@@ -80,13 +88,21 @@ function LoanSummaryCard(props) {
                 {arr.map((label, j) => (
                   <td
                     key={"row-" + i + "-col-" + j}
-                    className={props.clickable ? "" : "w3-hover-dark-grey"}
+                    className={
+                      "" + (props.clickable ? "" : "w3-hover-shadow w3-round")
+                    }
                   >
                     <div className="w3-half w3-center">
                       {format(label, true)}
                     </div>
-                    <div className="w3-half w3-center w3-light-grey">
-                      {format(props.data[label])}
+                    <div className="w3-half w3-center w3-light-grey text-overflow">
+                      {urlLabels.includes(label) ? (
+                        <Link to={format(props.data[label], null, true)}>
+                          Click this link.
+                        </Link>
+                      ) : (
+                        format(props.data[label])
+                      )}
                     </div>
                   </td>
                 ))}

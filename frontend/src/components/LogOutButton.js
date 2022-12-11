@@ -30,7 +30,7 @@ function LogOutButton(props) {
   return (
     <button
       onClick={logOutHandler}
-      className={"w3-btn w3-black " + props.className}
+      className={"w3-btn w3-blue-grey " + props.className}
     >
       <div className="icon-cont">
         <MdOutlineLogout />

@@ -57,14 +57,14 @@ function PaymentTable(props) {
   }
 
   return (
-    <div className="w3-card w3-section loan-summary-max-height">
-      <div className="w3-display-container w3-row w3-dark-grey">
+    <div className="w3-border w3-hover-shadow w3-round-xlarge w3-section loan-summary-max-height">
+      <div className={"w3-display-container w3-row " + props.color}>
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <MdOutlineMoney />
           <span className="margin-left">Payments</span>
           <span className="w3-display-right">
             <button
-              className={"w3-button w3-hover-blue w3-blue"}
+              className={"w3-button w3-hover-blue w3-blue w3-hover-shadow"}
               onClick={saveHandler}
             >
               <div className="icon-cont">
