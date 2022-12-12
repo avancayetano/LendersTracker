@@ -168,7 +168,7 @@ def add_loan_transactions():
     db.session.add(new_loan)
     db.session.commit()
 
-    # add new Paymentn row
+    # add new Payment row
     new_payment = Payment(period=period, loan_id=new_loan.id)
     db.session.add(new_payment)
 
@@ -254,7 +254,7 @@ def get_lender_loan_transactions(loan_id):
         print("Loan:", ind)
         loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
         for loan in loans:
-            if loanId and (int(loan.id) != int(loanId)):
+            if loan_id and (int(loan.id) != int(loan_id)):
                 continue
             txn = {
                 "loanId": loan.id,
@@ -279,8 +279,9 @@ def get_lender_loan_transactions(loan_id):
                 "otherDocs": loan.other_docs,
             }
             data.append(txn)
-    
-    print("FINAL DATA RETURNED:", data)
+    print("FINAL DATA:\n", data)
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
     # return error or OK
     ...
     return jsonify({"status": "OK", "message": data})
@@ -372,14 +373,24 @@ def get_payments(loanId):
 
     for payment in payments:
         status = []
+
+        paymentlenders = db.session.query(PaymentLender).filter(PaymentLender.payment_id == payment.id).all()
         
+        # get status for each lender
+        for paymentlender in paymentlenders:
+            username = db.session.scalar(db.select(Lender).filter_by(id=paymentlender.lender_id)).username
+            status.append(dict({
+                "lender": username,
+                "received": paymentlender.status
+            }))
+
         dat = {
             "period": payment.period,
             "paymentDate": payment.payment_date,
             "amortization": amortization,
-            "status": []
+            "status": status
         }
-        
+        data.append(dat)
 
     # return error or OK
     dummy_payments = [
@@ -438,6 +449,8 @@ def get_payments(loanId):
             ],
         },
     ]
+
+    print("ENDPOINT 6 FINAL DATA:", data)
 
     return jsonify({"status": "OK", "message": dummy_payments})
 
