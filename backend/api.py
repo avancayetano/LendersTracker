@@ -405,66 +405,10 @@ def get_payments(loanId):
         data.append(dat)
 
     # return error or OK
-    dummy_payments = [
-        {
-            "period": 1,
-            "paymentDate": "15 Oct 2022",
-            "amortization": 1000,
-            "status": [
-                {"lender": "Lender 1", "received": True},
-                {"lender": "Lender 2", "received": True},
-            ],
-        },
-        {
-            "period": 1,
-            "paymentDate": "30 Oct 2022",
-            "amortization": 1000,
-            "status": [
-                {"lender": "Lender 1", "received": True},
-                {"lender": "Lender 2", "received": True},
-            ],
-        },
-        {
-            "period": 2,
-            "paymentDate": "15 Oct 2022",
-            "amortization": 1000,
-            "status": [
-                {"lender": "Lender 1", "received": True},
-                {"lender": "Lender 2", "received": False},
-            ],
-        },
-        {
-            "period": 2,
-            "paymentDate": "15 Oct 2022",
-            "amortization": 1000,
-            "status": [
-                {"lender": "Lender 1", "received": False},
-                {"lender": "Lender 2", "received": False},
-            ],
-        },
-        {
-            "period": 3,
-            "paymentDate": "15 Oct 2022",
-            "amortization": 1000,
-            "status": [
-                {"lender": "Lender 1", "received": False},
-                {"lender": "Lender 2", "received": False},
-            ],
-        },
-        {
-            "period": 3,
-            "paymentDate": "15 Oct 2022",
-            "amortization": 1000,
-            "status": [
-                {"lender": "Lender 1", "received": False},
-                {"lender": "Lender 2", "received": False},
-            ],
-        },
-    ]
-
+    
     print("ENDPOINT 6 FINAL DATA:", data)
 
-    return jsonify({"status": "OK", "message": dummy_payments})
+    return jsonify({"status": "OK", "message": data})
 
 
 # 7 del loan transaction
