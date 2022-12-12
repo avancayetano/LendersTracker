@@ -173,6 +173,7 @@ function AddLoanForm() {
       .then((data) => {
         if (data.status === "OK") {
           navigate("/dashboard/transactions");
+          navigate(0);
         } else {
           alert(data.message ? data.message : "Error.");
         }
