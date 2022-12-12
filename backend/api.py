@@ -6,6 +6,7 @@ from models import db, Debtor, Lender, Loan, LoanLender, Payment, PaymentLender
 from flask import send_from_directory
 from os import path
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from werkzeug.utils import secure_filename
 import json
 import os
@@ -169,8 +170,22 @@ def add_loan_transactions():
     db.session.commit()
 
     # add new Payment row
-    new_payment = Payment(period=period, loan_id=new_loan.id)
-    db.session.add(new_payment)
+    for per in range(period):
+        for w in range(withdrawalsPerMonth):
+            # add payment
+            new_payment = Payment(period=per, payment_date=startPeriod + relativedelta(days=(withdrawalsPerMonth*per+w)*(30//withdrawalsPerMonth)), loan_id=new_loan.id)
+            db.session.add(new_payment)
+            
+            # add paymentlender
+            for val in lenderContribPairs: 
+                lender_fullname = str(val["lender"])  
+
+                lender = db.session.scalar(
+                    db.select(Lender).filter_by(fullname=lender_fullname)
+                )
+                new_paymentlender = PaymentLender(status="-", payment_id=new_payment.id, lender_id=lender.id)
+                db.session.add(new_paymentlender)
+
 
     # link every lender to loan via LoanLender, add LoanLender
     for val in lenderContribPairs:
@@ -181,8 +196,6 @@ def add_loan_transactions():
             db.select(Lender).filter_by(fullname=lender_fullname)
         )
 
-        new_paymentlender = PaymentLender(status="-", payment_id=new_payment.id, lender_id=lender.id)
-        db.session.add(new_paymentlender)
 
         new_loanLender = LoanLender(
             loan_id=new_loan.id, lender_id=lender.id, contribution=contrib
@@ -191,7 +204,6 @@ def add_loan_transactions():
         db.session.commit()
 
     # add Payment row for each computed paying time
-
 
     # return error or OK
     ...
