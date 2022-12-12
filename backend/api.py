@@ -183,7 +183,7 @@ def add_loan_transactions():
                 lender = db.session.scalar(
                     db.select(Lender).filter_by(fullname=lender_fullname)
                 )
-                new_paymentlender = PaymentLender(status="-", payment_id=new_payment.id, lender_id=lender.id)
+                new_paymentlender = PaymentLender(status="", payment_id=new_payment.id, lender_id=lender.id)
                 db.session.add(new_paymentlender)
 
 
@@ -195,7 +195,6 @@ def add_loan_transactions():
         lender = db.session.scalar(
             db.select(Lender).filter_by(fullname=lender_fullname)
         )
-
 
         new_loanLender = LoanLender(
             loan_id=new_loan.id, lender_id=lender.id, contribution=contrib
