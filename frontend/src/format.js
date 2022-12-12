@@ -10,7 +10,7 @@ const transform = {
 
 function format(value, isLabel = false, isUrl = false) {
   if (isUrl) {
-    return `/files/${value}`;
+    return `/display/${value}`;
   } else if (isLabel) {
     return transform.hasOwnProperty(value)
       ? transform[value]

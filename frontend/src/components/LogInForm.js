@@ -38,7 +38,7 @@ function LogInForm(props) {
         if (data.status === "OK") {
           navigate("/dashboard");
         } else {
-          alert("Unauthorized.");
+          alert(data.message ? data.message : "Unauthorized. Please log in.");
         }
       });
   }

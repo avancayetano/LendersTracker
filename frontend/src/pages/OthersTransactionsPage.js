@@ -1,16 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { MdOutlineManageSearch, MdOutlineTableRows } from "react-icons/md";
 
 import BasePage from "./BasePage";
 import Table from "../components/Table";
+import UserAuthContext from "../context/user-auth-context";
 
 function OthersTransactionsPage() {
   const [tableData, setTableData] = useState([]);
 
+  const userAuthContext = useContext(UserAuthContext);
+
   useEffect(() => {
-    fetch("/api/get-others-transactions-table")
-      .then((res) => res.json())
-      .then((data) => setTableData([...data.message]));
+    if (userAuthContext.userType === "lender") {
+      fetch("/api/get-others-transactions-table")
+        .then((res) => res.json())
+        .then((data) => setTableData([...data.message]));
+    }
   }, []);
 
   return (

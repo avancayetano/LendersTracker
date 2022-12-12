@@ -16,6 +16,7 @@ import {
 import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
 import LogOutButton from "./LogOutButton";
+import format from "../format";
 
 function SideBar() {
   const userAuthContext = useContext(UserAuthContext);
@@ -46,6 +47,9 @@ function SideBar() {
               <div className="w3-small w3-left-align">
                 {userAuthContext.username}
               </div>
+              <div className="w3-small w3-text-green w3-left-align">
+                {format(userAuthContext.userType, true)}
+              </div>
             </span>
           </div>
         </div>
@@ -59,18 +63,20 @@ function SideBar() {
             <span className="margin-left">Dashboard</span>
           </div>
         </Link>
-        <div
-          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
-          onClick={() => {
-            appMetaContext.setIsSideBarOpen(false);
-            appMetaContext.setIsAddLoanFormOpen(true);
-          }}
-        >
-          <div className="icon-cont full-height">
-            <MdOutlinePostAdd />
-            <span className="margin-left">Add Loan Transaction</span>
+        {userAuthContext.userType === "lender" && (
+          <div
+            className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
+            onClick={() => {
+              appMetaContext.setIsSideBarOpen(false);
+              appMetaContext.setIsAddLoanFormOpen(true);
+            }}
+          >
+            <div className="icon-cont full-height">
+              <MdOutlinePostAdd />
+              <span className="margin-left">Add Loan Transaction</span>
+            </div>
           </div>
-        </div>
+        )}
         <Link
           to="/dashboard/transactions"
           className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
@@ -81,16 +87,18 @@ function SideBar() {
             <span className="margin-left">Personal Transactions</span>
           </div>
         </Link>
-        <Link
-          to="/dashboard/others-transactions"
-          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
-          onClick={() => appMetaContext.setIsSideBarOpen(false)}
-        >
-          <div className="icon-cont">
-            <MdOutlineManageSearch />
-            <span className="margin-left">Others' Transactions</span>
-          </div>
-        </Link>
+        {userAuthContext.userType === "lender" && (
+          <Link
+            to="/dashboard/others-transactions"
+            className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
+            onClick={() => appMetaContext.setIsSideBarOpen(false)}
+          >
+            <div className="icon-cont">
+              <MdOutlineManageSearch />
+              <span className="margin-left">Others' Transactions</span>
+            </div>
+          </Link>
+        )}
 
         <LogOutButton className="bottom w3-bar-item w3-center" />
       </div>

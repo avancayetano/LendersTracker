@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { MdOutlineAttachMoney, MdOutlineViewStream } from "react-icons/md";
 
 import LoanSummaryCard from "../components/LoanSummaryCard";
 import BasePage from "./BasePage";
+import UserAuthContext from "../context/user-auth-context";
 
 function LoanTransactionsPage() {
   const [loanTransactions, setLoanTransactions] = useState([]);
 
+  const userAuthContext = useContext(UserAuthContext);
+
   useEffect(() => {
-    fetch("/api/get-user-loan-transactions")
+    fetch(`/api/get-${userAuthContext.userType}-loan-transactions/`)
       .then((res) => res.json())
       .then((data) => {
         setLoanTransactions([...data.message]);

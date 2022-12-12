@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { MdOutlineSubject, MdPeopleOutline } from "react-icons/md";
 
@@ -8,6 +8,7 @@ import BasePage from "./BasePage";
 import PaymentTable from "../components/PaymentTable";
 import BreakdownChart from "../components/BreakdownChart";
 import Table from "../components/Table";
+import UserAuthContext from "../context/user-auth-context";
 
 function LoanDetailsPage() {
   const params = useParams();
@@ -17,8 +18,10 @@ function LoanDetailsPage() {
   const [lenderBreakdown, setLenderBreakdown] = useState([]);
   const [payments, setPayments] = useState([]);
 
+  const userAuthContext = useContext(UserAuthContext);
+
   useEffect(() => {
-    fetch(`/api/get-user-loan-transactions/${loanId}`)
+    fetch(`/api/get-${userAuthContext.userType}-loan-transactions/${loanId}`)
       .then((res) => res.json())
       .then((data) => {
         setLoanTransaction(data.message[0]);
