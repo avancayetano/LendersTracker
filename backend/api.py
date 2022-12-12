@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from config import AppConfig
-from models import db, Debtor, Lender, Loan, LoanLender
+from models import db, Debtor, Lender, Loan, LoanLender, Payment, PaymentLender
 from flask import send_from_directory
 from os import path
 from datetime import datetime
@@ -170,6 +170,10 @@ def add_loan_transactions():
     db.session.add(new_loan)
     db.session.commit()
 
+    # add new Paymentn row
+    new_payment = Payment(period=period, loan_id=new_loan.id)
+    db.session.add(new_payment)
+
     # link every lender to loan via LoanLender, add LoanLender
     for val in lenderContribPairs:
         lender_fullname = str(val["lender"])
@@ -178,11 +182,18 @@ def add_loan_transactions():
         lender = db.session.scalar(
             db.select(Lender).filter_by(fullname=lender_fullname)
         )
+
+        new_paymentlender = PaymentLender(status="-", payment_id=new_payment.id, lender_id=lender.id)
+        db.session.add(new_paymentlender)
+
         new_loanLender = LoanLender(
             loan_id=new_loan.id, lender_id=lender.id, contribution=contrib
         )
         db.session.add(new_loanLender)
         db.session.commit()
+
+    # add Payment row for each computed paying time
+
 
     # return error or OK
     ...
@@ -223,24 +234,65 @@ def get_lenders_list():
 # 4 get user loan transactions
 @app.route("/api/get-user-loan-transactions", methods=["GET"])
 def get_user_loan_transactions():
+    print("ENDPOINT 4 CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     user_id = session["user_id"]
-
-    loan_id = request.args.get('loanId')
-    if loan_id:
-        print("PARAMETER LOANID ACCEPTED:", loan_id)
     
-
     # get request
     loan_lenders = db.session.query(LoanLender).filter(LoanLender.lender_id==user_id).all()
     data = []
-    print("XDDDDDDDDDDDXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
-    print(loan_lenders)
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    
     for ind,loan_lender in enumerate(loan_lenders):
         print("Loan:",ind)
         loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
         for loan in loans:
-            if loan_id and (int(loan.id) != int(loan_id)):
+            txn = {
+                "loanId": loan.id,
+                # "status": "Ongoing",
+                "debtor": loan.debtor.username,
+                "principalAmount": loan.principal_amt,
+                "interest": loan.interest,
+                "period": loan.period,
+                "withdrawalsPerMonth": loan.wpm,
+                # "amortizationPerWithdrawal": 1333.33,
+                # "amountAtEnd": 16000,
+                # "completedAmortization": 5333.33,
+                # "balanceAmortization": 10666.67,
+                "dateOfTransfer": loan.date_of_transfer,
+                "proofOfTransfer": loan.proof_of_transfer,
+                "lwt": loan.lwt,
+                "startPeriod": loan.start_period,
+                # "endPeriod": "30 Mar 2023",
+                "suretyDebtor": loan.surety_debtor,
+                "contractSigned": loan.contract_signed,
+                "ackReceipts": loan.ack_receipt,
+                "otherDocs": loan.other_docs,
+            }
+            data.append(txn)
+    
+
+    # return error or OK
+    ...
+    return jsonify({"status": "OK", "message": data})
+
+
+# 4.5 get a user loan transaction. PLEASE DO THIS
+# get a specific loan transaction info using its ID
+@app.route("/api/get-loan-transaction/<int:loanId>", methods=["GET"])
+def get_loan_transaction(loanId):
+    print("!!!!!!!4.5 ENDPOINT!!!!!!!")
+    # get user id
+    user_id = session["user_id"]
+
+    ### FILTER TXN from ID ###
+    loan_lenders = db.session.query(LoanLender).filter(LoanLender.lender_id==user_id).all()
+    print("LOANLENDERS FOUND:", loan_lenders)
+    data = []
+
+    for ind,loan_lender in enumerate(loan_lenders):
+        print("Loan:",ind)
+        loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
+        for loan in loans:
+            if loanId and (int(loan.id) != int(loanId)):
                 continue
             txn = {
                 "loanId": loan.id,
@@ -265,47 +317,69 @@ def get_user_loan_transactions():
                 "otherDocs": loan.other_docs,
             }
             data.append(txn)
-    print("FINAL DATA:\n", data)
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
+    
+    print("FINAL DATA RETURNED:", data)
     # return error or OK
     ...
     return jsonify({"status": "OK", "message": data})
 
+
+
 # 5 get lender breakdown of loan transaction
 @app.route("/api/get-lender-breakdown/<int:loanId>", methods=["GET"])
 def get_lender_breakdown(loanId):
-    user_id = session["user_id"]
 
-    dummy_data = [
-        {
-            "lender": "Lender1",  # fullname
-            "contribution": 10000,
-            "amortizationPerWithdrawal": 500,
-            "amountAtEnd": 6000,
-            "completedAmortization": 2000,
-            "balanceAmortization": 4000,
-        },
-        {
-            "lender": "Lender2",
-            "contribution": 123123,
-            "amortizationPerWithdrawal": 500,
-            "amountAtEnd": 6000,
-            "completedAmortization": 2000,
-            "balanceAmortization": 4000,
-        },
-    ]
+    loan = db.session.query(Loan).filter(Loan.id == loanId).first()
+    interest = loan.interest
+    duration = loan.duration
+    wpm = loan.wpm
 
-    return jsonify({"status": "OK", "message": dummy_data})
+    ### FILTER TXN from ID ###
+    loan_lenders = db.session.query(LoanLender).filter(LoanLender.loan_id==loanId).all()
+    print("LOANLENDERS FOUND:", loan_lenders)
+    data = []
+
+    for loan_lender in loan_lenders:
+        amortization = (loan_lender.contribution*(1+(interest*duration)))/(duration*wpm)
+        breakdown = {
+            "lender": loan_lender.id,
+            "contribution": loan_lender.contribution,
+            "amortizationPerWithdrawal": amortization,
+            "amountAtEnd": amortization*wpm*duration,
+            # "completedAmortization": 2000, computed
+            # "balanceAmortization": 4000, computed
+        }
+        data.append(breakdown)
+
+    return jsonify({"status": "OK", "message": data})
 
 
 # 6 get payments of loan transaction
 @app.route("/api/get-payments/<int:loanId>", methods=["GET"])
 def get_payments(loanId):
     user_id = session["user_id"]
-    # get request
+    
+    ### FILTER Payments from ID ###
+    payments = db.session.query(Payment).filter(Payment.loan_id==loanId).all()
+    print("LOANLENDERS FOUND:", payments)
+    data = []
+
+    loan = db.session.scalar(db.session.select(Loan).filter_by(id==loanId))
+    amortization = (loan.principal_amt*(1+(loan.interest*loan.duration)))/(loan.duration*loan.wpm)
+
+    for payment in payments:
+        status = []
+        
+        dat = {
+            "period": payment.period,
+            "paymentDate": payment.payment_date,
+            "amortization": amortization,
+            "status": []
+        }
+        payment.
+
     # return error or OK
-    payments = [
+    dummy_payments = [
         {
             "period": 1,
             "paymentDate": "15 Oct 2022",
@@ -362,7 +436,7 @@ def get_payments(loanId):
         },
     ]
 
-    return jsonify({"status": "OK", "message": payments})
+    return jsonify({"status": "OK", "message": dummy_payments})
 
 
 # 7 del loan transaction

@@ -109,7 +109,7 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     period = db.Column(db.Integer, nullable=False)
     payment_date = db.Column(
-        db.DateTime(timezone=True), server_default=func.now(), nullable=False
+        db.DateTime(timezone=True), server_default=func.now()
     )
 
     # relationships
@@ -125,7 +125,8 @@ class PaymentLender(db.Model):
     __tablename__ = "paymentlender"
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
 
-    pay_index = db.Column(db.Integer, nullable=False)
+    # retracted
+    # pay_index = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(20), nullable=False)
 
     # relationships
