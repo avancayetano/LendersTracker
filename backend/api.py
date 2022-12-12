@@ -582,106 +582,130 @@ def get_cumulative_bal_breakdown():
 def get_personal_transactions_table():
     user_info = session.get("user_info")
 
-    # user_id = user_info.get("id")
+    user_id = user_info.get("id")
 
-    # loanlenders = db.session.query(LoanLender).filter_by(lender_id=user_id).all()
+    user = db.session.query(Lender).filter_by(id=user_id).first()
+    fullname = user.fullname
 
-    # # find relevant loanlender rows
-    # for loanlender in loanlenders:
-    #     contribution = loanlender.contribution
-    #     loan_id = loanlender.loan_id
+    data = []
 
-    #     # find payments related to loan_id
-    #     payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+    # get loan_id from loanlenders
+    loanlenders = db.session.query(LoanLender).filter_by(lender_id=user_id).all()
 
-    #     # for each payment, count the number of received for the user
-    #     for payment in payments:
-    #         payment_id = payment.id
+    for loanlender in loanlenders:
+        loan_id = loanlender.loan_id
+        contribution = loanlender.contribution
+        bal = 0
 
-    #         # check paymentlender
-    #         paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=user_id, status="Received").all()
-    #         for paymentlender in paymentlenders:
-    #             print("Relevant PaymentLenders:", paymentlender.id)
+        # find payments related to loan_id
+        payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+        
+        loan = db.session.query(Loan).filter_by(id=loan_id).first()
+        earliest = None
 
-    #         print("Total")
+        debtor = db.session.query(Debtor).filter_by(id=loan.debtor_id).first()
 
+        # for each payment find earliest unreceived
+        for payment in payments:
+            payment_id = payment.id
+
+            # check paymentlender
+            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=user_id).all()
+            for paymentlender in paymentlenders:
+                if paymentlender.status == "":
+                    bal += contribution
+                    if not earliest:
+                        earliest = payment.payment_date
+                    elif earliest > payment.payment_date:
+                        earliest = payment.payment_date
+            
+        # includes everything, along with all received
+        if not earliest:
+            earliest = loan.start_period
+
+        dat = {
+            "loanId": loan_id,
+            "debtor": debtor.username,
+            "amortizationPerWithdrawal": int(loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm),
+            "balanceAmortization": bal,
+            "paymentDate": earliest.strftime(DATE_FORMAT),
+        }
+
+        data.append(dat) 
 
     # get request
     # return error or OK
-    ...
 
-    dummy_data = [
-        {
-            "loanId": 1,
-            "debtor": "Debtor 1",
-            "amortizationPerWithdrawal": 5000,
-            "balanceAmortization": 10000,
-            "paymentDate": "18-11-2022",
-        },
-        {
-            "loanId": 2,
-            "debtor": "Debtor 2",
-            "amortizationPerWithdrawal": 25000,
-            "balanceAmortization": 110000,
-            "paymentDate": "18-11-2022",
-        },
-        {
-            "loanId": 3,
-            "debtor": "Debtor 3",
-            "amortizationPerWithdrawal": 15000,
-            "balanceAmortization": 120000,
-            "paymentDate": "18-11-2022",
-        },
-        {
-            "loanId": 4,
-            "debtor": "Debtor 4",
-            "amortizationPerWithdrawal": 35000,
-            "balanceAmortization": 130000,
-            "paymentDate": "18-11-2022",
-        },
-    ]
-    return jsonify({"status": "OK", "message": dummy_data})
+    print("!!!!!!!!!!!!!!!FINAL DATA ENDPOINT 10:", data)
+    return jsonify({"status": "OK", "message": data})
 
 
 # 11
 @app.route("/api/get-others-transactions-table", methods=["GET"])
 def get_others_transactions_table():
     user_info = session.get("user_info")
-    dummy_data = [
-        {
-            "loanId": 1,
-            "lender": "Lender 1",
-            "debtor": "Debtor 1",
-            "amortizationPerWithdrawal": 5000,
-            "balanceAmortization": 10000,
-            "paymentDate": "18-11-2022",
-        },
-        {
-            "loanId": 2,
-            "lender": "Lender 1",
-            "debtor": "Debtor 2",
-            "amortizationPerWithdrawal": 25000,
-            "balanceAmortization": 110000,
-            "paymentDate": "18-11-2022",
-        },
-        {
-            "loanId": 3,
-            "lender": "Lender 3",
-            "debtor": "Debtor 3",
-            "amortizationPerWithdrawal": 15000,
-            "balanceAmortization": 120000,
-            "paymentDate": "18-11-2022",
-        },
-        {
-            "loanId": 4,
-            "lender": "Lender 2",
-            "debtor": "Debtor 4",
-            "amortizationPerWithdrawal": 35000,
-            "balanceAmortization": 130000,
-            "paymentDate": "18-11-2022",
-        },
-    ]
-    return jsonify({"status": "OK", "message": dummy_data})
+
+    user_id = user_info.get("id")
+
+    lenders = db.session.query(Lender).filter(Lender.id!=user_id).all()
+    
+    data = []
+
+    for lender in lenders:
+        lender_id = lender.id
+        fullname = lender.fullname
+
+        # get loan_id from loanlenders
+        loanlenders = db.session.query(LoanLender).filter_by(lender_id=lender_id).all()
+
+        for loanlender in loanlenders:
+            loan_id = loanlender.loan_id
+            contribution = loanlender.contribution
+            bal = 0
+
+            # find payments related to loan_id
+            payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+            
+            loan = db.session.query(Loan).filter_by(id=loan_id).first()
+            earliest = None
+
+            debtor = db.session.query(Debtor).filter_by(id=loan.debtor_id).first()
+
+            # for each payment find earliest unreceived
+            for payment in payments:
+                payment_id = payment.id
+
+                # check paymentlender
+                paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=lender_id).all()
+                for paymentlender in paymentlenders:
+                    if paymentlender.status == "":
+                        bal += contribution
+                        if not earliest:
+                            earliest = payment.payment_date
+                        elif earliest > payment.payment_date:
+                            earliest = payment.payment_date
+                
+            # includes everything, along with all received
+            if not earliest:
+                earliest = loan.start_period
+
+            dat = {
+                "loanId": loan_id,
+                "lender": fullname,
+                "debtor": debtor.username,
+                "amortizationPerWithdrawal": int(loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm),
+                "balanceAmortization": bal,
+                "paymentDate": earliest.strftime(DATE_FORMAT),
+            }
+
+            data.append(dat) 
+
+    # get request
+    # return error or OK
+
+    print("!!!!!!!!!!!!!!!FINAL DATA ENDPOINT 11:", data)
+    
+    return jsonify({"status": "OK", "message": data})
 
 
 @app.route("/api/logout-user", methods=["POST"])
