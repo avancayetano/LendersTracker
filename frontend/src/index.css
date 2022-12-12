@@ -190,6 +190,14 @@ select {
   text-decoration: none;
 }
 
+.link {
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
 .half {
   width: 49.9% !important;
 }

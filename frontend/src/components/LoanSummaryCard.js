@@ -51,6 +51,8 @@ function LoanSummaryCard(props) {
     "otherDocs",
   ];
 
+  const nameLabels = ["lender", "debtor"];
+
   return (
     <div
       className={
@@ -103,12 +105,14 @@ function LoanSummaryCard(props) {
                             <a
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w3-text-blue"
+                              className="w3-text-blue link"
                               href={format(props.data[label], null, true)}
                             >
                               Click this link.
                             </a>
                           )
+                        : nameLabels.includes(label)
+                        ? props.data[label].fullname
                         : format(props.data[label])}
                     </div>
                   </td>

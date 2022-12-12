@@ -13,6 +13,7 @@ import os
 
 
 USER_TYPES = {"debtor": Debtor, "lender": Lender}
+DATE_FORMAT = "%b %d, %Y"
 
 app = Flask(__name__)
 app.config.from_object(AppConfig)
@@ -173,19 +174,27 @@ def add_loan_transactions():
     for per in range(period):
         for w in range(withdrawalsPerMonth):
             # add payment
-            new_payment = Payment(period=per+1, payment_date=startPeriod + relativedelta(days=(withdrawalsPerMonth*per+w)*(30//withdrawalsPerMonth)), loan_id=new_loan.id)
+            new_payment = Payment(
+                period=per + 1,
+                payment_date=startPeriod
+                + relativedelta(
+                    days=(withdrawalsPerMonth * per + w) * (30 // withdrawalsPerMonth)
+                ),
+                loan_id=new_loan.id,
+            )
             db.session.add(new_payment)
-            
+
             # add paymentlender
-            for val in lenderContribPairs: 
-                lender_fullname = str(val["lender"])  
+            for val in lenderContribPairs:
+                lender_fullname = str(val["lender"])
 
                 lender = db.session.scalar(
                     db.select(Lender).filter_by(fullname=lender_fullname)
                 )
-                new_paymentlender = PaymentLender(status="", payment_id=new_payment.id, lender_id=lender.id)
+                new_paymentlender = PaymentLender(
+                    status="", payment_id=new_payment.id, lender_id=lender.id
+                )
                 db.session.add(new_paymentlender)
-
 
     # link every lender to loan via LoanLender, add LoanLender
     for val in lenderContribPairs:
@@ -270,7 +279,10 @@ def get_lender_loan_transactions(loan_id):
             txn = {
                 "loanId": loan.id,
                 # "status": "Ongoing",
-                "debtor": loan.debtor.username,
+                "debtor": {
+                    "username": loan.debtor.username,
+                    "fullname": loan.debtor.fullname,
+                },
                 "principalAmount": loan.principal_amt,
                 "interest": loan.interest,
                 "period": loan.period,
@@ -279,10 +291,10 @@ def get_lender_loan_transactions(loan_id):
                 # "amountAtEnd": 16000,
                 # "completedAmortization": 5333.33,
                 # "balanceAmortization": 10666.67,
-                "dateOfTransfer": loan.date_of_transfer,
+                "dateOfTransfer": loan.date_of_transfer.strftime(DATE_FORMAT),
                 "proofOfTransfer": loan.proof_of_transfer,
                 "lwt": loan.lwt,
-                "startPeriod": loan.start_period,
+                "startPeriod": loan.start_period.strftime(DATE_FORMAT),
                 # "endPeriod": "30 Mar 2023",
                 "suretyDebtor": loan.surety_debtor,
                 "contractSigned": loan.contract_signed,
@@ -315,7 +327,10 @@ def get_debtor_loan_transactions(loan_id):
         txn = {
             "loanId": loan.id,
             # "status": "Ongoing",
-            "debtor": loan.debtor.username,
+            "debtor": {
+                "username": loan.debtor.username,
+                "fullname": loan.debtor.fullname,
+            },
             "principalAmount": loan.principal_amt,
             "interest": loan.interest,
             "period": loan.period,
@@ -324,10 +339,10 @@ def get_debtor_loan_transactions(loan_id):
             # "amountAtEnd": 16000,
             # "completedAmortization": 5333.33,
             # "balanceAmortization": 10666.67,
-            "dateOfTransfer": loan.date_of_transfer,
+            "dateOfTransfer": loan.date_of_transfer.strftime(DATE_FORMAT),
             "proofOfTransfer": loan.proof_of_transfer,
             "lwt": loan.lwt,
-            "startPeriod": loan.start_period,
+            "startPeriod": loan.start_period.strftime(DATE_FORMAT),
             # "endPeriod": "30 Mar 2023",
             "suretyDebtor": loan.surety_debtor,
             "contractSigned": loan.contract_signed,
@@ -350,17 +365,24 @@ def get_lender_breakdown(loanId):
     wpm = loan.wpm
 
     ### FILTER TXN from ID ###
-    loan_lenders = db.session.query(LoanLender).filter(LoanLender.loan_id==loanId).all()
+    loan_lenders = (
+        db.session.query(LoanLender).filter(LoanLender.loan_id == loanId).all()
+    )
     print("LOANLENDERS FOUND:", loan_lenders)
     data = []
 
     for loan_lender in loan_lenders:
-        amortization = (loan_lender.contribution*(1+(interest*duration)))/(duration*wpm)
+        amortization = (loan_lender.contribution * (1 + (interest * duration))) / (
+            duration * wpm
+        )
         breakdown = {
-            "lender": loan_lender.id,
+            "lender": {
+                "username": loan_lender.lender.username,
+                "fullname": loan_lender.lender.fullname,
+            },
             "contribution": loan_lender.contribution,
             "amortizationPerWithdrawal": amortization,
-            "amountAtEnd": amortization*wpm*duration,
+            "amountAtEnd": amortization * wpm * duration,
             # "completedAmortization": 2000, computed
             # "balanceAmortization": 4000, computed
         }
@@ -373,40 +395,53 @@ def get_lender_breakdown(loanId):
 @app.route("/api/get-payments/<int:loanId>", methods=["GET"])
 def get_payments(loanId):
     user_info = session.get("user_info")
-    
+
     ### FILTER Payments from ID ###
-    payments = db.session.query(Payment).filter(Payment.loan_id==loanId).all()
+    payments = db.session.query(Payment).filter(Payment.loan_id == loanId).all()
     print("LOANLENDERS FOUND:", payments)
     data = []
 
-    loan = db.session.scalar(
-        db.select(Loan).filter_by(id=loanId)
+    loan = db.session.scalar(db.select(Loan).filter_by(id=loanId))
+    amortization = (loan.principal_amt * (1 + (loan.interest * loan.period))) / (
+        loan.period * loan.wpm
     )
-    amortization = (loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
 
     for payment in payments:
         status = []
 
-        paymentlenders = db.session.query(PaymentLender).filter(PaymentLender.payment_id == payment.id).all()
-        
+        paymentlenders = (
+            db.session.query(PaymentLender)
+            .filter(PaymentLender.payment_id == payment.id)
+            .all()
+        )
+
         # get status for each lender
         for paymentlender in paymentlenders:
-            username = db.session.scalar(db.select(Lender).filter_by(id=paymentlender.lender_id)).username
-            status.append(dict({
-                "lender": username,
-                "received": paymentlender.status
-            }))
+            lender = db.session.scalar(
+                db.select(Lender).filter_by(id=paymentlender.lender_id)
+            )
+            status.append(
+                dict(
+                    {
+                        "lender": {
+                            "username": lender.username,
+                            "fullname": lender.fullname,
+                        },
+                        "received": False if paymentlender.status == "" else True,
+                    }
+                )
+            )
 
         dat = {
             "period": payment.period,
-            "paymentDate": payment.payment_date,
+            "paymentDate": payment.payment_date.strftime(DATE_FORMAT),
             "amortization": amortization,
-            "status": status
+            "status": status,
         }
         data.append(dat)
 
     # return error or OK
-    
+
     print("ENDPOINT 6 FINAL DATA:", data)
 
     return jsonify({"status": "OK", "message": data})

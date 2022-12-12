@@ -36,6 +36,7 @@ function LoanDetailsPage() {
     fetch(`/api/get-payments/${loanId}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log(data.message);
         setPayments([...data.message]);
       });
   }, []);

@@ -10,7 +10,7 @@ import format from "../format";
 function PaymentTable(props) {
   const order = ["period", "paymentDate", "amortization"];
   const keys = order.concat(
-    props.data[0].status.map((obj, idx) => "Status For " + obj.lender)
+    props.data[0].status.map((obj, idx) => "Status For " + obj.lender.fullname)
   );
 
   const [paymentData, setPaymentData] = useState(props.data);
@@ -54,6 +54,8 @@ function PaymentTable(props) {
     }
   }
 
+  const nameLabels = ["lender", "debtor"];
+
   return (
     <div className="w3-border w3-hover-shadow w3-round-xlarge w3-section loan-summary-max-height">
       <div className={"w3-display-container w3-row " + props.color}>
@@ -94,7 +96,9 @@ function PaymentTable(props) {
                   if (order.includes(label)) {
                     return (
                       <td key={"row-" + i + "-col-" + j} className="w3-center">
-                        {format(obj[label])}
+                        {nameLabels.includes(label)
+                          ? obj[label].fullname
+                          : format(obj[label])}
                       </td>
                     );
                   } else {

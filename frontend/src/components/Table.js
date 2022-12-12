@@ -29,6 +29,8 @@ function Table(props) {
     );
   }, [sortBy, isAscending]);
 
+  const nameLabels = ["lender", "debtor"];
+
   return (
     <div className="w3-section loan-summary-max-height w3-border w3-hover-shadow w3-round-xlarge">
       <div className={"w3-display-container w3-row " + props.color}>
@@ -67,7 +69,11 @@ function Table(props) {
             {data.map((obj, i) => (
               <tr key={"row-" + i} className="w3-hover-light-grey">
                 {props.keys.map((label, j) => (
-                  <td key={"row-" + i + "-col-" + j}>{format(obj[label])}</td>
+                  <td key={"row-" + i + "-col-" + j}>
+                    {nameLabels.includes(label)
+                      ? obj[label].fullname
+                      : format(obj[label])}
+                  </td>
                 ))}
               </tr>
             ))}

@@ -46,7 +46,7 @@ function DashboardPage(props) {
         {userAuthContext.userType === "debtor" && (
           <p>
             View your{" "}
-            <Link to="/dashboard/transactions" className="w3-text-blue">
+            <Link to="/dashboard/transactions" className="w3-text-blue link">
               personal transactions.
             </Link>
           </p>
