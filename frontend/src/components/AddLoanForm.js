@@ -127,10 +127,7 @@ function AddLoanForm() {
     const dateOfTransfer = dateOfTransferRef.current.value;
 
     const lwt = lwtRef.current.getValue()[0].value;
-    const suretyDebtor =
-      suretyDebtorRef.current.getValue().length > 0
-        ? suretyDebtorRef.current.getValue()[0].value
-        : "";
+    const suretyDebtor = suretyDebtorRef.current.value;
     const startPeriod = startPeriodRef.current.value;
 
     // files
@@ -189,6 +186,7 @@ function AddLoanForm() {
         icon={MdOutlinePostAdd}
         closeHandler={closeHandler}
       >
+        <div className="w3-text-red w3-center w3-small">* Required.</div>
         <form
           autoComplete="off"
           encType="multipart/form-data"
@@ -196,9 +194,10 @@ function AddLoanForm() {
         >
           <div className="w3-row">
             <label htmlFor="debtor" className="w3-small text-overflow">
-              Debtor
+              Debtor <span className="w3-text-red w3-small">*</span>
             </label>
             <Select
+              className="icon-btn"
               options={debtorsList}
               id="debtor"
               ref={debtorRef}
@@ -211,48 +210,58 @@ function AddLoanForm() {
               Lender Contributions
             </span>
           </div>
-          <div>
-            {lenderContribPairs.map((obj, idx) => (
-              <div className="w3-row" key={"lender-contrib-" + idx}>
-                <div className="w3-twothird">
-                  <Select
-                    options={lendersList}
-                    value={
-                      lendersList.filter(
-                        (lenderObj) => lenderObj.value === obj.lender
-                      )[0]
-                    }
+          {lenderContribPairs.length > 0 && (
+            <div className="w3-row w3-small text-overflow">
+              <span className="twothird float-left w3-center">
+                Lender <span className="w3-text-red w3-small">*</span>
+              </span>
+              <span className="third float-left">
+                <span className="threequarter float-left w3-center">
+                  Contribution <span className="w3-text-red w3-small">*</span>
+                </span>
+              </span>
+            </div>
+          )}
+          {lenderContribPairs.map((obj, idx) => (
+            <div className="w3-row" key={"lender-contrib-" + idx}>
+              <span className="twothird float-left">
+                <Select
+                  options={lendersList}
+                  value={
+                    lendersList.filter(
+                      (lenderObj) => lenderObj.value === obj.lender
+                    )[0]
+                  }
+                  onChange={(event) => {
+                    editLenderInLenderContribPair(event, idx);
+                  }}
+                  required={true}
+                />
+              </span>
+              <span className="third float-left">
+                <span className="threequarter float-left">
+                  <input
+                    className="w3-input w3-center w3-border"
+                    type="number"
+                    step="0.01"
+                    placeholder="Contribution"
+                    required
                     onChange={(event) => {
-                      editLenderInLenderContribPair(event, idx);
+                      editContribInLenderContribPair(event, idx);
                     }}
-                    required={true}
+                    value={obj.contribution}
                   />
-                </div>
-                <div className="w3-third">
-                  <div className="w3-threequarter">
-                    <input
-                      className="w3-input w3-center w3-border"
-                      type="number"
-                      step="0.01"
-                      placeholder="Contribution"
-                      required
-                      onChange={(event) => {
-                        editContribInLenderContribPair(event, idx);
-                      }}
-                      value={obj.contribution}
-                    />
-                  </div>
-                  <div
-                    className="w3-quarter w3-button w3-border w3-center w3-hover-pale-red"
-                    title="Remove entry."
-                    onClick={() => removeLenderContribPair(idx)}
-                  >
-                    -
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                </span>
+                <span
+                  className="quarter remove-lender-contrib-pair-btn w3-center icon-btn w3-red w3-hover-pink"
+                  title="Remove entry."
+                  onClick={() => removeLenderContribPair(idx)}
+                >
+                  -
+                </span>
+              </span>
+            </div>
+          ))}
 
           <div
             className="w3-show w3-indigo w3-hover-shadow icon-cont icon-cont-center w3-center icon-btn w3-padding-small w3-small"
@@ -267,7 +276,7 @@ function AddLoanForm() {
           <div className="w3-row">
             <div className="w3-twothird">
               <label htmlFor="amount" className="w3-small text-overflow">
-                Principal amount
+                Principal amount <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"
@@ -281,7 +290,7 @@ function AddLoanForm() {
             </div>
             <div className="w3-third">
               <label htmlFor="interest" className="w3-small text-overflow">
-                Interest
+                Interest <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"
@@ -296,7 +305,7 @@ function AddLoanForm() {
           <div className="w3-row">
             <div className="w3-half">
               <label htmlFor="period" className="w3-small text-overflow">
-                Period (months)
+                Period (months) <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"
@@ -312,7 +321,8 @@ function AddLoanForm() {
                 htmlFor="withdrawals-per-month"
                 className="w3-small text-overflow"
               >
-                Withdrawals per month
+                Withdrawals per month{" "}
+                <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"
@@ -327,7 +337,7 @@ function AddLoanForm() {
           <div className="w3-row">
             <div className="w3-half">
               <label htmlFor="date-transfer" className="w3-small text-overflow">
-                Date of transfer
+                Date of transfer <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"
@@ -342,7 +352,8 @@ function AddLoanForm() {
                 htmlFor="proof-transfer"
                 className="w3-small text-overflow"
               >
-                Proof of transfer
+                Proof of transfer{" "}
+                <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"
@@ -360,7 +371,8 @@ function AddLoanForm() {
                 htmlFor="lender-transfer"
                 className="w3-small text-overflow"
               >
-                Lender who transferred
+                Lender who transferred{" "}
+                <span className="w3-text-red w3-small">*</span>
               </label>
               <Select
                 options={lendersList}
@@ -373,8 +385,9 @@ function AddLoanForm() {
               <label htmlFor="surety-debtor" className="w3-small text-overflow">
                 Surety debtor
               </label>
-              <Select
-                options={debtorsList}
+              <input
+                className="w3-input w3-center w3-border"
+                type="text"
                 id="surety-debtor"
                 ref={suretyDebtorRef}
               />
@@ -383,7 +396,7 @@ function AddLoanForm() {
           <div className="w3-row">
             <div className="w3-half">
               <label htmlFor="start-period" className="w3-small text-overflow">
-                Start period
+                Start period <span className="w3-text-red w3-small">*</span>
               </label>
               <input
                 className="w3-input w3-center w3-border"

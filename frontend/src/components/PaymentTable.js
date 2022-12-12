@@ -13,8 +13,6 @@ function PaymentTable(props) {
     props.data[0].status.map((obj, idx) => "Status For " + obj.lender)
   );
 
-  const currentUser = "Lender 1";
-
   const [paymentData, setPaymentData] = useState(props.data);
 
   function paymentStatusHandler(event, idx) {
@@ -23,7 +21,7 @@ function PaymentTable(props) {
       const newData = structuredClone(prevData);
       const received = event.target.value === "Received" ? true : false;
       newData[idx].status = newData[idx].status.map((obj) =>
-        obj.lender === currentUser
+        obj.lender === props.currentUser.fullname
           ? { lender: obj.lender, received: received }
           : obj
       );
@@ -62,17 +60,19 @@ function PaymentTable(props) {
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <MdOutlineMoney />
           <span className="margin-left">Payments</span>
-          <span className="w3-display-right">
-            <button
-              className={"w3-button w3-hover-blue w3-blue w3-hover-shadow"}
-              onClick={saveHandler}
-            >
-              <div className="icon-cont">
-                <MdOutlineSave />
-                <span className="margin-left">Save</span>
-              </div>
-            </button>
-          </span>
+          {props.currentUser.userType === "lender" && (
+            <span className="w3-display-right">
+              <button
+                className={"w3-button w3-hover-blue w3-blue w3-hover-shadow"}
+                onClick={saveHandler}
+              >
+                <div className="icon-cont">
+                  <MdOutlineSave />
+                  <span className="margin-left">Save</span>
+                </div>
+              </button>
+            </span>
+          )}
         </div>
       </div>
       <div className="w3-responsive w3-small">
@@ -98,7 +98,7 @@ function PaymentTable(props) {
                       </td>
                     );
                   } else {
-                    if (label === "Status For " + currentUser) {
+                    if (label === "Status For " + props.currentUser.fullname) {
                       return (
                         <td
                           key={"row-" + i + "-col-" + j}

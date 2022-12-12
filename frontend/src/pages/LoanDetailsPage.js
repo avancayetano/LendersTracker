@@ -56,6 +56,7 @@ function LoanDetailsPage() {
               clickable={false}
               columns={4}
               color="w3-teal"
+              currentUser={userAuthContext}
             />
           </div>
         )}
@@ -91,7 +92,12 @@ function LoanDetailsPage() {
 
         {payments.length > 0 && (
           <div className="w3-row">
-            <PaymentTable data={payments} loanId={loanId} color="w3-green" />
+            <PaymentTable
+              data={payments}
+              loanId={loanId}
+              color="w3-green"
+              currentUser={userAuthContext}
+            />
           </div>
         )}
       </div>

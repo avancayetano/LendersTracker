@@ -64,17 +64,19 @@ function LoanSummaryCard(props) {
             <>
               <MdOutlineStickyNote2 />
               <span className="margin-left">Loan Summary</span>
-              <span className="w3-display-right">
-                <button
-                  className={"w3-button w3-hover-red w3-red w3-hover-shadow"}
-                  onClick={deleteHandler}
-                >
-                  <div className="icon-cont">
-                    <MdOutlineDelete />
-                    <span className="margin-left">Delete</span>
-                  </div>
-                </button>
-              </span>
+              {props.currentUser.userType === "lender" && (
+                <span className="w3-display-right">
+                  <button
+                    className={"w3-button w3-hover-red w3-red w3-hover-shadow"}
+                    onClick={deleteHandler}
+                  >
+                    <div className="icon-cont">
+                      <MdOutlineDelete />
+                      <span className="margin-left">Delete</span>
+                    </div>
+                  </button>
+                </span>
+              )}
             </>
           )}
         </div>
@@ -101,7 +103,7 @@ function LoanSummaryCard(props) {
                             <a
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w3-text-black"
+                              className="w3-text-blue"
                               href={format(props.data[label], null, true)}
                             >
                               Click this link.
