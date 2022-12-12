@@ -112,6 +112,10 @@
   overflow-y: auto;
 }
 
+.overflow-hidden {
+  overflow-y: hidden;
+}
+
 .clickable {
   cursor: pointer;
 }

@@ -36,7 +36,6 @@ function LoanDetailsPage() {
     fetch(`/api/get-payments/${loanId}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.message);
         setPayments([...data.message]);
       });
   }, []);
@@ -82,7 +81,10 @@ function LoanDetailsPage() {
             <span className="w3-mobile w3-col s4 m3 l2">
               <BreakdownChart
                 breakdown={lenderBreakdown.map((obj) => {
-                  return { label: obj.lender, value: obj.contribution };
+                  return {
+                    label: obj.lender.fullname,
+                    value: obj.contribution,
+                  };
                 })}
                 label=""
                 title="Cumulative Balance Amortization Breakdown"

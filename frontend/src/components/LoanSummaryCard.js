@@ -60,7 +60,9 @@ function LoanSummaryCard(props) {
         (props.clickable ? " clickable" : "")
       }
     >
-      <div className={"w3-display-container w3-row " + props.color}>
+      <div
+        className={"overflow-hidden w3-display-container w3-row " + props.color}
+      >
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           {!props.clickable && (
             <>
