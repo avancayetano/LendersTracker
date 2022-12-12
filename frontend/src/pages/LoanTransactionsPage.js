@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineAttachMoney, MdOutlineViewStream } from "react-icons/md";
 
 import LoanSummaryCard from "../components/LoanSummaryCard";
@@ -10,6 +10,7 @@ function LoanTransactionsPage() {
   const [loanTransactions, setLoanTransactions] = useState([]);
 
   const userAuthContext = useContext(UserAuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`/api/get-${userAuthContext.userType}-loan-transactions/`)
@@ -30,6 +31,10 @@ function LoanTransactionsPage() {
     "w3-green",
   ];
 
+  function clickHandler(event, url) {
+    navigate(url);
+  }
+
   return (
     <BasePage>
       <div className="w3-container w3-center">
@@ -40,14 +45,19 @@ function LoanTransactionsPage() {
         <h6>Click for more details.</h6>
         {loanTransactions.length === 0 && <h6>{"No loan transactions."}</h6>}
         {loanTransactions.map((obj, idx) => (
-          <Link to={"/dashboard/transactions/" + obj.loanId} key={obj.loanId}>
+          <div
+            key={obj.loanId}
+            onClick={(event) =>
+              clickHandler(event, "/dashboard/transactions/" + obj.loanId)
+            }
+          >
             <LoanSummaryCard
               data={obj}
               clickable={true}
               columns={4}
               color={colors[idx % colors.length]}
             />
-          </Link>
+          </div>
         ))}
       </div>
     </BasePage>

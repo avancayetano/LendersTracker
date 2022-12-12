@@ -96,13 +96,18 @@ function LoanSummaryCard(props) {
                       {format(label, true)}
                     </div>
                     <div className="w3-half w3-center w3-light-grey text-overflow">
-                      {urlLabels.includes(label) ? (
-                        <Link to={format(props.data[label], null, true)}>
-                          Click this link.
-                        </Link>
-                      ) : (
-                        format(props.data[label])
-                      )}
+                      {urlLabels.includes(label)
+                        ? props.data[label] && (
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w3-text-black"
+                              href={format(props.data[label], null, true)}
+                            >
+                              Click this link.
+                            </a>
+                          )
+                        : format(props.data[label])}
                     </div>
                   </td>
                 ))}
