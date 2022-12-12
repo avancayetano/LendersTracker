@@ -503,25 +503,109 @@ def edit_payment_status():
 # 9
 @app.route("/api/get-cumulative-bal-breakdown", methods=["GET"])
 def get_cumulative_bal_breakdown():
+    print("!!!!!!!!!!!!!!!!!!!!!!!!  ENDPOINT 9 CALLED !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     user_info = session.get("user_info")
-    ...
 
-    dummy_data = {
-        "cumulativeBalAmortization": 700000,
-        "cumulativeCompAmortization": 105605050,
-        "breakdown": [
-            {"debtor": "Debtor 1", "cumulativeBal": 40000},
-            {"debtor": "Debtor 2", "cumulativeBal": 40000},
-        ],
+    user_id = user_info.get("id")
+
+    loanlenders = db.session.query(LoanLender).filter_by(lender_id=user_id).all()
+
+    cumulBal = 0
+    cumulComp = 0
+    debtorBal = dict()
+
+    # find relevant loanlender rows
+    for loanlender in loanlenders:
+        contribution = loanlender.contribution
+        loan_id = loanlender.loan_id
+
+        # for calculating breakdown
+        loan = db.session.scalar(
+            db.select(Loan).filter_by(id=user_id)
+        )
+        debtor = db.session.scalar(
+            db.select(Debtor).filter_by(id=loan.debtor_id)
+        )
+
+        if not (debtor.fullname in debtorBal):
+            debtorBal[debtor.fullname] = 0
+
+
+        # find payments related to loan_id
+        print("!!!!!!!!!!!!! PAYMENT TYPE!!!!!!!!!")
+        payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+        print(type(payments))
+
+        # for each payment, count the number of received for the user
+        for payment in payments:
+            payment_id = payment.id
+
+            # check paymentlender
+            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=user_id).all()
+            for paymentlender in paymentlenders:
+                if paymentlender.status == "":
+                    cumulBal += contribution
+                    debtorBal[debtor.fullname] += contribution
+                else:
+                    cumulComp += contribution
+                print("Relevant PaymentLenders:", paymentlender.id, "Status:", paymentlender.status)
+
+    
+    breakdown = []
+
+    for key,val in debtorBal.items():
+        breakdown.append({
+            "debtor": key,
+            "cumulativeBal": val
+        })
+    
+
+                
+
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print("Total CumulBal:", cumulBal)
+    print("Total CumulComp:", cumulComp)
+    print("Final Breakdown:", breakdown)
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+    data = {
+        "cumulativeBalAmortization": cumulBal,
+        "cumulativeCompAmortization": cumulComp,
+        "breakdown": breakdown,
     }
 
-    return jsonify({"status": "OK", "message": dummy_data})
+    return jsonify({"status": "OK", "message": data})
 
 
 # 10
 @app.route("/api/get-personal-transactions-table", methods=["GET"])
 def get_personal_transactions_table():
     user_info = session.get("user_info")
+
+    # user_id = user_info.get("id")
+
+    # loanlenders = db.session.query(LoanLender).filter_by(lender_id=user_id).all()
+
+    # # find relevant loanlender rows
+    # for loanlender in loanlenders:
+    #     contribution = loanlender.contribution
+    #     loan_id = loanlender.loan_id
+
+    #     # find payments related to loan_id
+    #     payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+
+    #     # for each payment, count the number of received for the user
+    #     for payment in payments:
+    #         payment_id = payment.id
+
+    #         # check paymentlender
+    #         paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=user_id, status="Received").all()
+    #         for paymentlender in paymentlenders:
+    #             print("Relevant PaymentLenders:", paymentlender.id)
+
+    #         print("Total")
+
+
     # get request
     # return error or OK
     ...
