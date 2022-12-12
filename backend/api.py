@@ -442,8 +442,6 @@ def get_payments(loanId):
 
     # return error or OK
 
-    print("ENDPOINT 6 FINAL DATA:", data)
-
     return jsonify({"status": "OK", "message": data})
 
 
@@ -470,13 +468,34 @@ def delete_loan_transactions():
 def edit_payment_status():
     user_info = session.get("user_info")
 
-    ...
-    loanId = request.json.get("loanId", None)
-    payment_data = request.json.get("paymentData", [])
+    loan_id = request.json["loanId"]
+    paymentData = request.json["paymentData"]
 
-    print("ooooooooooooooooooooooooooooooooooooooooooooooo")
-    print(payment_data)
-    print("ooooooooooooooooooooooooooooooooooooooooooooooo")
+    # files = request.files
+    # inputs = json.loads(request.form["inputs"])
+
+    print(loan_id)
+    for row in paymentData:
+        payment_date = row["paymentDate"]
+        period = row["period"]
+        status = row["status"]
+        
+        print("FINDING PAYMENT...", loan_id, period, payment_date)
+        payment_id = db.session.query(Payment).filter_by(loan_id=loan_id, period=period, payment_date=datetime.strptime(payment_date,"%b %d, %Y")).first()
+        payment_id = payment_id.id
+        print(payment_id)
+        
+
+        print("PAYMENT_ID", payment_id)
+        for stat in status:
+            lender_id = db.session.query(Lender).filter_by(username=stat["lender"]["username"]).first()
+            lender_id = lender_id.id
+
+            paymentlender = db.session.query(PaymentLender).filter_by(lender_id=lender_id,payment_id=payment_id).first()
+            received = stat["received"]
+            paymentlender.status = "Received" if received else ""
+
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
     return jsonify({"status": "OK", "message": "Successfully updated."})
 
