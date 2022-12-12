@@ -173,7 +173,7 @@ def add_loan_transactions():
     for per in range(period):
         for w in range(withdrawalsPerMonth):
             # add payment
-            new_payment = Payment(period=per, payment_date=startPeriod + relativedelta(days=(withdrawalsPerMonth*per+w)*(30//withdrawalsPerMonth)), loan_id=new_loan.id)
+            new_payment = Payment(period=per+1, payment_date=startPeriod + relativedelta(days=(withdrawalsPerMonth*per+w)*(30//withdrawalsPerMonth)), loan_id=new_loan.id)
             db.session.add(new_payment)
             
             # add paymentlender
@@ -347,7 +347,7 @@ def get_lender_breakdown(loanId):
 
     loan = db.session.query(Loan).filter(Loan.id == loanId).first()
     interest = loan.interest
-    duration = loan.duration
+    duration = loan.period
     wpm = loan.wpm
 
     ### FILTER TXN from ID ###
@@ -380,8 +380,10 @@ def get_payments(loanId):
     print("LOANLENDERS FOUND:", payments)
     data = []
 
-    loan = db.session.scalar(db.session.select(Loan).filter_by(id==loanId))
-    amortization = (loan.principal_amt*(1+(loan.interest*loan.duration)))/(loan.duration*loan.wpm)
+    loan = db.session.scalar(
+        db.select(Loan).filter_by(id=loanId)
+    )
+    amortization = (loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
 
     for payment in payments:
         status = []
