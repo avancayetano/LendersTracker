@@ -21,7 +21,7 @@ function PaymentTable(props) {
       const newData = structuredClone(prevData);
       const received = event.target.value === "Received" ? true : false;
       newData[idx].status = newData[idx].status.map((obj) =>
-        obj.lender === props.currentUser.fullname
+        obj.lender.fullname === props.currentUser.fullname
           ? { lender: obj.lender, received: received }
           : obj
       );
@@ -114,7 +114,7 @@ function PaymentTable(props) {
                             value={
                               obj.status[j - order.length].received
                                 ? "Received"
-                                : ""
+                                : "-"
                             }
                             className="w3-border padding-x cursor w3-hover-light-grey"
                             onChange={(event) => paymentStatusHandler(event, i)}
