@@ -25,25 +25,22 @@ with app.app_context():
     db.create_all()
 
 
-def user_info(user):
-    return {"id": user.id, "fullname": user.fullname, "username": user.username}
+def format_user_info(user, user_type):
+    return {
+        "id": user.id,
+        "fullname": user.fullname,
+        "username": user.username,
+        "userType": user_type,
+    }
 
 
 @app.route("/api/get-current-user")
 def get_current_user():
-    user_id = session.get("user_id")
+    user_info = session.get("user_info")
+    if user_info:
+        return jsonify({"status": "OK", "message": user_info})
 
-    if not user_id:
-        return jsonify({"status": "error", "message": "Unauthorized."})
-
-    user = db.session.scalar(db.select(Debtor).filter_by(id=user_id))
-
-    if user:
-        return jsonify({"status": "OK", "message": user_info(user)})
-
-    user = db.session.scalar(db.select(Lender).filter_by(id=user_id))
-
-    return jsonify({"status": "OK", "message": user_info(user)})
+    return jsonify({"status": "error", "message": "Unauthorized."})
 
 
 @app.route("/api/register-user", methods=["POST"])
@@ -74,9 +71,9 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
 
-    session["user_id"] = new_user.id
-
-    return jsonify({"status": "OK", "message": user_info(new_user)})
+    session["user_info"] = format_user_info(new_user, user_type)
+    user_info = session.get("user_info")
+    return jsonify({"status": "OK", "message": user_info})
 
 
 @app.route("/api/login-user", methods=["POST"])
@@ -95,9 +92,10 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"status": "error", "message": "Unauthorized."})
 
-    session["user_id"] = user.id
+    session["user_info"] = format_user_info(user, user_type)
+    user_info = session.get("user_info")
 
-    return jsonify({"status": "OK", "message": user_info(user)})
+    return jsonify({"status": "OK", "message": user_info})
 
 
 def allowed_file(filename):
@@ -109,7 +107,7 @@ def allowed_file(filename):
 
 @app.route("/api/add-loan-transaction", methods=["POST"])
 def add_loan_transactions():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     # get request
 
     files = request.files
@@ -136,7 +134,7 @@ def add_loan_transactions():
     filenames = {}
     for file in files:
         filename = "{}-{}-{}-{}".format(
-            user_id,
+            user_info.get("id"),
             file,
             datetime.now().strftime("%d%m%Y_%H%M%S"),
             files[file].filename,
@@ -202,7 +200,7 @@ def add_loan_transactions():
 
 @app.route("/api/get-debtors-list", methods=["GET"])
 def get_debtors_list():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     # return list of debtors
     debtors_query = Debtor.query.all()
 
@@ -218,7 +216,7 @@ def get_debtors_list():
 
 @app.route("/api/get-lenders-list", methods=["GET"])
 def get_lenders_list():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     # return list of debtors
     lenders_query = Lender.query.all()
 
@@ -231,65 +229,29 @@ def get_lenders_list():
     return jsonify({"status": "OK", "message": lenders})
 
 
-# 4 get user loan transactions
-@app.route("/api/get-user-loan-transactions", methods=["GET"])
-def get_user_loan_transactions():
-    print("ENDPOINT 4 CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    user_id = session["user_id"]
-    
+# 4 get lender loan transactions
+@app.route(
+    "/api/get-lender-loan-transactions/", methods=["GET"], defaults={"loan_id": None}
+)
+@app.route("/api/get-lender-loan-transactions/<int:loan_id>", methods=["GET"])
+def get_lender_loan_transactions(loan_id):
+    user_info = session.get("user_info")
+
+    if loan_id:
+        print("PARAMETER LOANID ACCEPTED:", loan_id)
+
     # get request
-    loan_lenders = db.session.query(LoanLender).filter(LoanLender.lender_id==user_id).all()
+    loan_lenders = (
+        db.session.query(LoanLender)
+        .filter(LoanLender.lender_id == user_info.get("id"))
+        .all()
+    )
     data = []
-    
-    for ind,loan_lender in enumerate(loan_lenders):
-        print("Loan:",ind)
-        loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
-        for loan in loans:
-            txn = {
-                "loanId": loan.id,
-                # "status": "Ongoing",
-                "debtor": loan.debtor.username,
-                "principalAmount": loan.principal_amt,
-                "interest": loan.interest,
-                "period": loan.period,
-                "withdrawalsPerMonth": loan.wpm,
-                # "amortizationPerWithdrawal": 1333.33,
-                # "amountAtEnd": 16000,
-                # "completedAmortization": 5333.33,
-                # "balanceAmortization": 10666.67,
-                "dateOfTransfer": loan.date_of_transfer,
-                "proofOfTransfer": loan.proof_of_transfer,
-                "lwt": loan.lwt,
-                "startPeriod": loan.start_period,
-                # "endPeriod": "30 Mar 2023",
-                "suretyDebtor": loan.surety_debtor,
-                "contractSigned": loan.contract_signed,
-                "ackReceipts": loan.ack_receipt,
-                "otherDocs": loan.other_docs,
-            }
-            data.append(txn)
-    
-
-    # return error or OK
-    ...
-    return jsonify({"status": "OK", "message": data})
-
-
-# 4.5 get a user loan transaction. PLEASE DO THIS
-# get a specific loan transaction info using its ID
-@app.route("/api/get-loan-transaction/<int:loanId>", methods=["GET"])
-def get_loan_transaction(loanId):
-    print("!!!!!!!4.5 ENDPOINT!!!!!!!")
-    # get user id
-    user_id = session["user_id"]
-
-    ### FILTER TXN from ID ###
-    loan_lenders = db.session.query(LoanLender).filter(LoanLender.lender_id==user_id).all()
-    print("LOANLENDERS FOUND:", loan_lenders)
-    data = []
-
-    for ind,loan_lender in enumerate(loan_lenders):
-        print("Loan:",ind)
+    print("XDDDDDDDDDDDXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
+    print(loan_lenders)
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    for ind, loan_lender in enumerate(loan_lenders):
+        print("Loan:", ind)
         loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
         for loan in loans:
             if loanId and (int(loan.id) != int(loanId)):
@@ -324,10 +286,51 @@ def get_loan_transaction(loanId):
     return jsonify({"status": "OK", "message": data})
 
 
+# 4.75 get debtor loan transactions (for debtors view)
+@app.route(
+    "/api/get-debtor-loan-transactions/", methods=["GET"], defaults={"loan_id": None}
+)
+@app.route("/api/get-debtor-loan-transactions/<int:loan_id>", methods=["GET"])
+def get_debtor_loan_transactions(loan_id):
+    user_info = session.get("user_info")
+
+    data = []
+    loans = db.session.query(Loan).filter(Loan.debtor_id == user_info.get("id")).all()
+
+    for loan in loans:
+        if loan_id and (int(loan.id) != int(loan_id)):
+            continue
+        txn = {
+            "loanId": loan.id,
+            # "status": "Ongoing",
+            "debtor": loan.debtor.username,
+            "principalAmount": loan.principal_amt,
+            "interest": loan.interest,
+            "period": loan.period,
+            "withdrawalsPerMonth": loan.wpm,
+            # "amortizationPerWithdrawal": 1333.33,
+            # "amountAtEnd": 16000,
+            # "completedAmortization": 5333.33,
+            # "balanceAmortization": 10666.67,
+            "dateOfTransfer": loan.date_of_transfer,
+            "proofOfTransfer": loan.proof_of_transfer,
+            "lwt": loan.lwt,
+            "startPeriod": loan.start_period,
+            # "endPeriod": "30 Mar 2023",
+            "suretyDebtor": loan.surety_debtor,
+            "contractSigned": loan.contract_signed,
+            "ackReceipts": loan.ack_receipt,
+            "otherDocs": loan.other_docs,
+        }
+        data.append(txn)
+
+    return jsonify({"status": "OK", "message": data})
+
 
 # 5 get lender breakdown of loan transaction
 @app.route("/api/get-lender-breakdown/<int:loanId>", methods=["GET"])
 def get_lender_breakdown(loanId):
+    user_info = session.get("user_info")
 
     loan = db.session.query(Loan).filter(Loan.id == loanId).first()
     interest = loan.interest
@@ -357,7 +360,7 @@ def get_lender_breakdown(loanId):
 # 6 get payments of loan transaction
 @app.route("/api/get-payments/<int:loanId>", methods=["GET"])
 def get_payments(loanId):
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     
     ### FILTER Payments from ID ###
     payments = db.session.query(Payment).filter(Payment.loan_id==loanId).all()
@@ -376,7 +379,7 @@ def get_payments(loanId):
             "amortization": amortization,
             "status": []
         }
-        payment.
+        
 
     # return error or OK
     dummy_payments = [
@@ -442,11 +445,11 @@ def get_payments(loanId):
 # 7 del loan transaction
 @app.route("/api/delete-loan-transaction", methods=["POST"])
 def delete_loan_transactions():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
 
     # mas safe if nasa payload yung loanId kaysa sa URL mismo
     loanId = request.json.get("loanId", None)
-    
+
     loan = db.session.get(Loan, loanId)
     if not loan:
         return jsonify({"status": "OK", "message": "No loan id exists."})
@@ -460,7 +463,7 @@ def delete_loan_transactions():
 # 8 edit payment status
 @app.route("/api/edit-payment-status", methods=["POST"])
 def edit_payment_status():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
 
     ...
     loanId = request.json.get("loanId", None)
@@ -476,7 +479,7 @@ def edit_payment_status():
 # 9
 @app.route("/api/get-cumulative-bal-breakdown", methods=["GET"])
 def get_cumulative_bal_breakdown():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     ...
 
     dummy_data = {
@@ -494,7 +497,7 @@ def get_cumulative_bal_breakdown():
 # 10
 @app.route("/api/get-personal-transactions-table", methods=["GET"])
 def get_personal_transactions_table():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     # get request
     # return error or OK
     ...
@@ -535,7 +538,7 @@ def get_personal_transactions_table():
 # 11
 @app.route("/api/get-others-transactions-table", methods=["GET"])
 def get_others_transactions_table():
-    user_id = session["user_id"]
+    user_info = session.get("user_info")
     dummy_data = [
         {
             "loanId": 1,
@@ -575,7 +578,7 @@ def get_others_transactions_table():
 
 @app.route("/api/logout-user", methods=["POST"])
 def logout_user():
-    session.pop("user_id")
+    session.pop("user_info")
     session.clear()
     return jsonify({"status": "OK", "message": "Log out successful."})
 

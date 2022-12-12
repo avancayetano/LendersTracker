@@ -29,8 +29,6 @@ function RegisterForm(props) {
       userType: userTypeInputRef.current.getValue()[0].value,
     };
 
-    console.log(userTypeInputRef);
-
     fetch("/api/register-user", {
       method: "POST",
       body: JSON.stringify(content),
@@ -43,7 +41,7 @@ function RegisterForm(props) {
         if (data.status === "OK") {
           navigate("/dashboard");
         } else {
-          alert("Unauthorized.");
+          alert(data.message ? data.message : "Unauthorized. Please log in.");
         }
       });
   }

@@ -73,7 +73,7 @@ function AddLoanForm() {
             })
           );
         } else {
-          alert("Error.");
+          alert(data.message ? data.message : "Error.");
         }
       });
     fetch("/api/get-lenders-list")
@@ -86,7 +86,7 @@ function AddLoanForm() {
             })
           );
         } else {
-          alert("Error.");
+          alert(data.message ? data.message : "Error.");
         }
       });
   }, []);
@@ -172,9 +172,9 @@ function AddLoanForm() {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "OK") {
-          navigate("/dashboard");
+          navigate("/dashboard/transactions");
         } else {
-          alert("Error.");
+          alert(data.message ? data.message : "Error.");
         }
       });
 

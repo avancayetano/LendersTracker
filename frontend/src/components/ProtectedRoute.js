@@ -21,8 +21,11 @@ function ProtectedRoute(props) {
             userAuthContext.setProfile(data.message);
             setIsLoading(false);
           } else {
+            alert(data.message);
+            console.log(
+              data.message ? data.message : "Unauthorized. Please log in."
+            );
             navigate("/");
-            alert("Unauthorized.");
           }
         });
     }

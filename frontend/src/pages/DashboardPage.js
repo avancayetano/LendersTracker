@@ -1,5 +1,5 @@
 import { useContext, useRef, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MdOutlineHome, MdOutlineTableRows } from "react-icons/md";
 import Chart from "chart.js/auto";
 import { Colors } from "chart.js";
@@ -20,17 +20,19 @@ function DashboardPage(props) {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    fetch("/api/get-cumulative-bal-breakdown")
-      .then((res) => res.json())
-      .then((data) => {
-        setBalanceAmortizationBreakdown(data.message);
-      });
+    if (userAuthContext.userType === "lender") {
+      fetch("/api/get-cumulative-bal-breakdown")
+        .then((res) => res.json())
+        .then((data) => {
+          setBalanceAmortizationBreakdown(data.message);
+        });
 
-    fetch("/api/get-personal-transactions-table")
-      .then((res) => res.json())
-      .then((data) => {
-        setTableData([...data.message]);
-      });
+      fetch("/api/get-personal-transactions-table")
+        .then((res) => res.json())
+        .then((data) => {
+          setTableData([...data.message]);
+        });
+    }
   }, []);
 
   return (
@@ -41,6 +43,12 @@ function DashboardPage(props) {
           <span className="margin-left text-overflow">Dashboard</span>
         </h4>
         <h4>Welcome, {userAuthContext.fullname}!</h4>
+        {userAuthContext.userType === "debtor" && (
+          <p>
+            View your{" "}
+            <Link to="/dashboard/transactions">personal transactions.</Link>
+          </p>
+        )}
         {Object.keys(balanceAmortizationBreakdown).length > 0 && (
           <div className="w3-container w3-display-container w3-border w3-hover-shadow w3-round-xlarge w3-margin-top">
             <div className="w3-half full-height">
