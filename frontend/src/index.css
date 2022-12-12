@@ -160,8 +160,13 @@ td {
   user-select: none;
 }
 
-.full-height {
+.remove-lender-contrib-pair-btn {
+  min-height: 100% !important;
   height: 100% !important;
+  display: inline-block;
+  border: none;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 select {
@@ -183,4 +188,37 @@ select {
 
 .no-text-deco {
   text-decoration: none;
+}
+
+.half {
+  width: 49.9% !important;
+}
+
+.third {
+  width: 33.33% !important;
+}
+
+.twothird {
+  width: 66.66% !important;
+}
+
+.quarter {
+  width: 24.9% !important;
+}
+
+.threequarter {
+  width: 74.9% !important;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.outline {
+  outline: 1px solid lightgrey;
+  border: 0;
 }

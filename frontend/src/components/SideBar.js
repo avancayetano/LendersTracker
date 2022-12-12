@@ -37,7 +37,7 @@ function SideBar() {
             <MdOutlineClose className="w3-large" />
           </div>
         </div>
-        <div className="w3-container w3-bar-item w3-center w3-border-top w3-border-bottom w3-padding-16">
+        <div className="w3-container w3-bar-item w3-center w3-border-top w3-border-bottom w3-padding-16 w3-hover-light-grey icon-btn">
           <div className="icon-cont">
             <MdAccountCircle className="w3-jumbo w3-onethird w3-text-brown" />
             <span className="w3-twothird w3-padding-small">

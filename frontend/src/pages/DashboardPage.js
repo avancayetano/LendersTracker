@@ -46,13 +46,15 @@ function DashboardPage(props) {
         {userAuthContext.userType === "debtor" && (
           <p>
             View your{" "}
-            <Link to="/dashboard/transactions">personal transactions.</Link>
+            <Link to="/dashboard/transactions" className="w3-text-blue">
+              personal transactions.
+            </Link>
           </p>
         )}
         {Object.keys(balanceAmortizationBreakdown).length > 0 && (
-          <div className="w3-container w3-display-container w3-border w3-hover-shadow w3-round-xlarge w3-margin-top">
-            <div className="w3-half full-height">
-              <div className="w3-margin">
+          <div className="w3-container w3-display-container w3-border w3-padding-16 w3-hover-shadow w3-round-xlarge w3-margin-top">
+            <div className="w3-half">
+              <div className="w3-padding-small">
                 <Table
                   icon={MdOutlineTableRows}
                   title="Cumulative Balance Amortization"
@@ -62,8 +64,8 @@ function DashboardPage(props) {
                 />
               </div>
             </div>
-            <div className="w3-quarter w3-padding-left">
-              <div className="w3-margin">
+            <div className="w3-quarter">
+              <div className="w3-padding-small">
                 <HorizontalTable
                   icon={MdOutlineTableRows}
                   title="Summary"
