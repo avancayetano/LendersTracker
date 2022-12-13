@@ -211,8 +211,6 @@ def add_loan_transactions():
         db.session.add(new_loanLender)
         db.session.commit()
 
-    # add Payment row for each computed paying time
-
     # return error or OK
     ...
     return jsonify({"status": "OK", "message": "Successfully added loan transaction."})
@@ -255,6 +253,7 @@ def get_lenders_list():
 )
 @app.route("/api/get-lender-loan-transactions/<int:loan_id>", methods=["GET"])
 def get_lender_loan_transactions(loan_id):
+    print("ENDPOINT 4 called")
     user_info = session.get("user_info")
 
     if loan_id:
@@ -267,18 +266,45 @@ def get_lender_loan_transactions(loan_id):
         .all()
     )
     data = []
-    print("XDDDDDDDDDDDXXXXXXXXXXXXXXXXXXXXXXXXXXXx")
-    print(loan_lenders)
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    
+    print("Traversing Loanlenders\n", loan_lenders)
     for ind, loan_lender in enumerate(loan_lenders):
-        print("Loan:", ind)
         loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
+        print("Traversing Loans\n", loans)
         for loan in loans:
             if loan_id and (int(loan.id) != int(loan_id)):
                 continue
+            
+
+            amortization = (loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+            # get contribution
+            loanlenders = db.session.query(LoanLender).filter_by(loan_id=loan.id).all()
+            print("Traversing LoanLenders", loanlenders)
+            contrib = dict()
+            for loanlender in loanlenders:
+                contrib[loanlender.lender_id] = loanlender.contribution
+
+            comp = 0
+            bal = 0
+
+            # check if ongoing
+            payments = db.session.query(Payment).filter_by(loan_id=loan.id).all()
+            ongoing = False
+            for payment in payments:
+                payment_id = payment.id
+
+                paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id).all()
+                for paymentlender in paymentlenders:
+                    if paymentlender.status == "":
+                        bal += contrib[paymentlender.lender_id]
+                        ongoing = True
+                    else:
+                        comp += contrib[paymentlender.lender_id]
+
+
             txn = {
                 "loanId": loan.id,
-                # "status": "Ongoing",
+                "status": "Ongoing" if ongoing else "Done",
                 "debtor": {
                     "username": loan.debtor.username,
                     "fullname": loan.debtor.fullname,
@@ -287,15 +313,15 @@ def get_lender_loan_transactions(loan_id):
                 "interest": loan.interest,
                 "period": loan.period,
                 "withdrawalsPerMonth": loan.wpm,
-                # "amortizationPerWithdrawal": 1333.33,
-                # "amountAtEnd": 16000,
-                # "completedAmortization": 5333.33,
-                # "balanceAmortization": 10666.67,
+                "amortizationPerWithdrawal": amortization,
+                "amountAtEnd": loan.period*loan.wpm*amortization,
+                "completedAmortization": comp,
+                "balanceAmortization": bal,
                 "dateOfTransfer": loan.date_of_transfer.strftime(DATE_FORMAT),
                 "proofOfTransfer": loan.proof_of_transfer,
                 "lwt": loan.lwt,
                 "startPeriod": loan.start_period.strftime(DATE_FORMAT),
-                # "endPeriod": "30 Mar 2023",
+                "endPeriod": loan.start_period + relativedelta(months=int(loan.period)),
                 "suretyDebtor": loan.surety_debtor,
                 "contractSigned": loan.contract_signed,
                 "ackReceipts": loan.ack_receipt,
@@ -316,6 +342,8 @@ def get_lender_loan_transactions(loan_id):
 )
 @app.route("/api/get-debtor-loan-transactions/<int:loan_id>", methods=["GET"])
 def get_debtor_loan_transactions(loan_id):
+    print("((((((((((((((((((((ENDPOINT 4.75 called))))))))))))))))))))")
+
     user_info = session.get("user_info")
 
     data = []
@@ -324,9 +352,36 @@ def get_debtor_loan_transactions(loan_id):
     for loan in loans:
         if loan_id and (int(loan.id) != int(loan_id)):
             continue
+
+        # loanlender
+        loanlenders = db.session.query(LoanLender).filter_by(loan_id=loan_id).all()
+        contrib = dict()
+        for loanlender in loanlenders:
+            contrib[loanlender.lender_id] = loanlender.contribution
+
+        amortization = (loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+
+        comp = 0
+        bal = 0
+
+        # check if ongoing
+        payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+        ongoing = False
+        for payment in payments:
+            payment_id = payment.id
+
+            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id).all()
+            for paymentlender in paymentlenders:
+                if paymentlender.status == "":
+                    bal += contrib[paymentlender.lender_id]
+                    ongoing = True
+                else:
+                    comp += contrib[paymentlender.lender_id]
+
+
         txn = {
             "loanId": loan.id,
-            # "status": "Ongoing",
+            "status": "Ongoing" if ongoing else "Done",
             "debtor": {
                 "username": loan.debtor.username,
                 "fullname": loan.debtor.fullname,
@@ -335,15 +390,15 @@ def get_debtor_loan_transactions(loan_id):
             "interest": loan.interest,
             "period": loan.period,
             "withdrawalsPerMonth": loan.wpm,
-            # "amortizationPerWithdrawal": 1333.33,
-            # "amountAtEnd": 16000,
-            # "completedAmortization": 5333.33,
-            # "balanceAmortization": 10666.67,
+            "amortizationPerWithdrawal": amortization,
+            "amountAtEnd": loan.period*loan.wpm*amortization,
+            "completedAmortization": comp,
+            "balanceAmortization": bal,
             "dateOfTransfer": loan.date_of_transfer.strftime(DATE_FORMAT),
             "proofOfTransfer": loan.proof_of_transfer,
             "lwt": loan.lwt,
             "startPeriod": loan.start_period.strftime(DATE_FORMAT),
-            # "endPeriod": "30 Mar 2023",
+            "endPeriod": loan.start_period + relativedelta(months=int(loan.period)),
             "suretyDebtor": loan.surety_debtor,
             "contractSigned": loan.contract_signed,
             "ackReceipts": loan.ack_receipt,
@@ -372,19 +427,40 @@ def get_lender_breakdown(loanId):
     data = []
 
     for loan_lender in loan_lenders:
+        loan_id = loan_lender.loan_id
+        lender_id = loan_lender.lender_id
+
         amortization = (loan_lender.contribution * (1 + (interest * duration))) / (
             duration * wpm
         )
+        contribution = loan_lender.contribution
+
+        comp = 0
+        bal = 0
+
+        # get payments with loan_id
+        payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
+
+        for payment in payments:
+            payment_id = payment.id
+            
+            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=lender_id).all()
+            for paymentlender in paymentlenders:
+                if paymentlender.status == "":
+                    bal += contribution
+                else:
+                    comp += contribution
+
         breakdown = {
             "lender": {
                 "username": loan_lender.lender.username,
                 "fullname": loan_lender.lender.fullname,
             },
-            "contribution": loan_lender.contribution,
+            "contribution": contribution,
             "amortizationPerWithdrawal": amortization,
             "amountAtEnd": amortization * wpm * duration,
-            # "completedAmortization": 2000, computed
-            # "balanceAmortization": 4000, computed
+            "completedAmortization": comp,
+            "balanceAmortization": bal,
         }
         data.append(breakdown)
 
