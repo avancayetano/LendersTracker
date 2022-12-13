@@ -606,7 +606,7 @@ def get_cumulative_bal_breakdown():
         amortization = (loanlender.contribution*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
 
         if not (debtor.fullname in debtorBal):
-            debtorBal[debtor.fullname] = 0
+            debtorBal[(debtor.fullname,debtor.username)] = 0
 
 
         # find payments related to loan_id
@@ -623,7 +623,7 @@ def get_cumulative_bal_breakdown():
             for paymentlender in paymentlenders:
                 if paymentlender.status == "":
                     cumulBal += amortization
-                    debtorBal[debtor.fullname] += amortization
+                    debtorBal[(debtor.fullname,debtor.username)] += amortization
                 else:
                     cumulComp += amortization
                 print("Relevant PaymentLenders:", paymentlender.id, "Status:", paymentlender.status)
@@ -633,7 +633,10 @@ def get_cumulative_bal_breakdown():
 
     for key,val in debtorBal.items():
         breakdown.append({
-            "debtor": key,
+            "debtor": {
+                "username": key[1],
+                "fullname": key[0]
+            },
             "cumulativeBal": val
         })
     
@@ -703,7 +706,10 @@ def get_personal_transactions_table():
 
         dat = {
             "loanId": loan_id,
-            "debtor": debtor.username,
+            "debtor": {
+                "username": debtor.username,
+                "fullname": debtor.fullname
+            },
             "amortizationPerWithdrawal": int(loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm),
             "balanceAmortization": bal,
             "paymentDate": earliest.strftime(DATE_FORMAT),
@@ -732,6 +738,7 @@ def get_others_transactions_table():
     for lender in lenders:
         lender_id = lender.id
         fullname = lender.fullname
+        username = lender.username
 
         # get loan_id from loanlenders
         loanlenders = db.session.query(LoanLender).filter_by(lender_id=lender_id).all()
@@ -769,8 +776,14 @@ def get_others_transactions_table():
 
             dat = {
                 "loanId": loan_id,
-                "lender": fullname,
-                "debtor": debtor.username,
+                "lender": {
+                    "username": username,
+                    "fullname": fullname
+                },
+                "debtor": {
+                    "username": debtor.username,
+                    "fullname": debtor.fullname
+                },
                 "amortizationPerWithdrawal": int(loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm),
                 "balanceAmortization": bal,
                 "paymentDate": earliest.strftime(DATE_FORMAT),
