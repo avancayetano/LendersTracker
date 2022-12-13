@@ -17,10 +17,11 @@ function LoanDetailsPage() {
   const [loanTransaction, setLoanTransaction] = useState({});
   const [lenderBreakdown, setLenderBreakdown] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [isPageOutdated, setIsPageOutdated] = useState(false);
 
   const userAuthContext = useContext(UserAuthContext);
 
-  useEffect(() => {
+  function fetchData() {
     fetch(`/api/get-${userAuthContext.userType}-loan-transactions/${loanId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -37,8 +38,19 @@ function LoanDetailsPage() {
       .then((res) => res.json())
       .then((data) => {
         setPayments([...data.message]);
+        setIsPageOutdated(false);
       });
+  }
+
+  useEffect(() => {
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    if (isPageOutdated) {
+      fetchData();
+    }
+  }, [isPageOutdated]);
 
   return (
     <BasePage>
@@ -100,6 +112,7 @@ function LoanDetailsPage() {
               loanId={loanId}
               color="w3-green"
               currentUser={userAuthContext}
+              setIsPageOutdated={setIsPageOutdated}
             />
           </div>
         )}

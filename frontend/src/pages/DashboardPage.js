@@ -84,7 +84,10 @@ function DashboardPage(props) {
                 <BreakdownChart
                   breakdown={balanceAmortizationBreakdown.breakdown.map(
                     (obj) => {
-                      return { label: obj.debtor, value: obj.cumulativeBal };
+                      return {
+                        label: obj.debtor.fullname,
+                        value: obj.cumulativeBal,
+                      };
                     }
                   )}
                   title="Cumulative Balance Amortization"

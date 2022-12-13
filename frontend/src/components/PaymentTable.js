@@ -46,7 +46,7 @@ function PaymentTable(props) {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === "OK") {
-            console.log(data.message);
+            props.setIsPageOutdated(true);
           } else {
             alert("Error.");
           }

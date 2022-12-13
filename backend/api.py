@@ -266,7 +266,7 @@ def get_lender_loan_transactions(loan_id):
         .all()
     )
     data = []
-    
+
     print("Traversing Loanlenders\n", loan_lenders)
     for ind, loan_lender in enumerate(loan_lenders):
         loans = db.session.query(Loan).filter(Loan.id == loan_lender.loan_id).all()
@@ -274,15 +274,18 @@ def get_lender_loan_transactions(loan_id):
         for loan in loans:
             if loan_id and (int(loan.id) != int(loan_id)):
                 continue
-            
 
-            amortization = (loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+            amortization = (
+                loan.principal_amt * (1 + (loan.interest * loan.period))
+            ) / (loan.period * loan.wpm)
             # get contribution
             loanlenders = db.session.query(LoanLender).filter_by(loan_id=loan.id).all()
             print("Traversing LoanLenders", loanlenders)
             contrib = dict()
             for loanlender in loanlenders:
-                contrib[loanlender.lender_id] = (loanlender.contribution*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+                contrib[loanlender.lender_id] = (
+                    loanlender.contribution * (1 + (loan.interest * loan.period))
+                ) / (loan.period * loan.wpm)
 
             comp = 0
             bal = 0
@@ -293,7 +296,11 @@ def get_lender_loan_transactions(loan_id):
             for payment in payments:
                 payment_id = payment.id
 
-                paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id).all()
+                paymentlenders = (
+                    db.session.query(PaymentLender)
+                    .filter_by(payment_id=payment_id)
+                    .all()
+                )
                 for paymentlender in paymentlenders:
                     if paymentlender.status == "":
                         print("BAL NOW", bal, "pid", payment_id)
@@ -302,7 +309,6 @@ def get_lender_loan_transactions(loan_id):
                     else:
                         print("COMP NOW", comp, "pid", payment_id)
                         comp += contrib[paymentlender.lender_id]
-
 
             txn = {
                 "loanId": loan.id,
@@ -316,14 +322,16 @@ def get_lender_loan_transactions(loan_id):
                 "period": loan.period,
                 "withdrawalsPerMonth": loan.wpm,
                 "amortizationPerWithdrawal": amortization,
-                "amountAtEnd": loan.period*loan.wpm*amortization,
+                "amountAtEnd": loan.period * loan.wpm * amortization,
                 "completedAmortization": comp,
                 "balanceAmortization": bal,
                 "dateOfTransfer": loan.date_of_transfer.strftime(DATE_FORMAT),
                 "proofOfTransfer": loan.proof_of_transfer,
                 "lwt": loan.lwt,
                 "startPeriod": loan.start_period.strftime(DATE_FORMAT),
-                "endPeriod": loan.start_period + relativedelta(months=int(loan.period)),
+                "endPeriod": (
+                    loan.start_period + relativedelta(months=int(loan.period))
+                ).strftime(DATE_FORMAT),
                 "suretyDebtor": loan.surety_debtor,
                 "contractSigned": loan.contract_signed,
                 "ackReceipts": loan.ack_receipt,
@@ -359,9 +367,13 @@ def get_debtor_loan_transactions(loan_id):
         loanlenders = db.session.query(LoanLender).filter_by(loan_id=loan_id).all()
         contrib = dict()
         for loanlender in loanlenders:
-            contrib[loanlender.lender_id] = (loanlender.contribution*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+            contrib[loanlender.lender_id] = (
+                loanlender.contribution * (1 + (loan.interest * loan.period))
+            ) / (loan.period * loan.wpm)
 
-        amortization = (loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+        amortization = (loan.principal_amt * (1 + (loan.interest * loan.period))) / (
+            loan.period * loan.wpm
+        )
 
         comp = 0
         bal = 0
@@ -372,14 +384,15 @@ def get_debtor_loan_transactions(loan_id):
         for payment in payments:
             payment_id = payment.id
 
-            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id).all()
+            paymentlenders = (
+                db.session.query(PaymentLender).filter_by(payment_id=payment_id).all()
+            )
             for paymentlender in paymentlenders:
                 if paymentlender.status == "":
                     bal += contrib[paymentlender.lender_id]
                     ongoing = True
                 else:
                     comp += contrib[paymentlender.lender_id]
-
 
         txn = {
             "loanId": loan.id,
@@ -393,14 +406,16 @@ def get_debtor_loan_transactions(loan_id):
             "period": loan.period,
             "withdrawalsPerMonth": loan.wpm,
             "amortizationPerWithdrawal": amortization,
-            "amountAtEnd": loan.period*loan.wpm*amortization,
+            "amountAtEnd": loan.period * loan.wpm * amortization,
             "completedAmortization": comp,
             "balanceAmortization": bal,
             "dateOfTransfer": loan.date_of_transfer.strftime(DATE_FORMAT),
             "proofOfTransfer": loan.proof_of_transfer,
             "lwt": loan.lwt,
             "startPeriod": loan.start_period.strftime(DATE_FORMAT),
-            "endPeriod": loan.start_period + relativedelta(months=int(loan.period)),
+            "endPeriod": (
+                loan.start_period + relativedelta(months=int(loan.period))
+            ).strftime(DATE_FORMAT),
             "suretyDebtor": loan.surety_debtor,
             "contractSigned": loan.contract_signed,
             "ackReceipts": loan.ack_receipt,
@@ -444,8 +459,12 @@ def get_lender_breakdown(loanId):
 
         for payment in payments:
             payment_id = payment.id
-            
-            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=lender_id).all()
+
+            paymentlenders = (
+                db.session.query(PaymentLender)
+                .filter_by(payment_id=payment_id, lender_id=lender_id)
+                .all()
+            )
             for paymentlender in paymentlenders:
                 if paymentlender.status == "":
                     bal += amortization
@@ -556,19 +575,34 @@ def edit_payment_status():
         payment_date = row["paymentDate"]
         period = row["period"]
         status = row["status"]
-        
+
         print("FINDING PAYMENT...", loan_id, period, payment_date)
-        payment_id = db.session.query(Payment).filter_by(loan_id=loan_id, period=period, payment_date=datetime.strptime(payment_date,"%b %d, %Y")).first()
+        payment_id = (
+            db.session.query(Payment)
+            .filter_by(
+                loan_id=loan_id,
+                period=period,
+                payment_date=datetime.strptime(payment_date, "%b %d, %Y"),
+            )
+            .first()
+        )
         payment_id = payment_id.id
         print(payment_id)
-        
 
         print("PAYMENT_ID", payment_id)
         for stat in status:
-            lender_id = db.session.query(Lender).filter_by(username=stat["lender"]["username"]).first()
+            lender_id = (
+                db.session.query(Lender)
+                .filter_by(username=stat["lender"]["username"])
+                .first()
+            )
             lender_id = lender_id.id
 
-            paymentlender = db.session.query(PaymentLender).filter_by(lender_id=lender_id,payment_id=payment_id).first()
+            paymentlender = (
+                db.session.query(PaymentLender)
+                .filter_by(lender_id=lender_id, payment_id=payment_id)
+                .first()
+            )
             received = stat["received"]
             paymentlender.status = "Received" if received else ""
 
@@ -596,18 +630,15 @@ def get_cumulative_bal_breakdown():
         loan_id = loanlender.loan_id
 
         # for calculating breakdown
-        loan = db.session.scalar(
-            db.select(Loan).filter_by(id=user_id)
-        )
-        debtor = db.session.scalar(
-            db.select(Debtor).filter_by(id=loan.debtor_id)
-        )
+        loan = db.session.scalar(db.select(Loan).filter_by(id=user_id))
+        debtor = db.session.scalar(db.select(Debtor).filter_by(id=loan.debtor_id))
 
-        amortization = (loanlender.contribution*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+        amortization = (
+            loanlender.contribution * (1 + (loan.interest * loan.period))
+        ) / (loan.period * loan.wpm)
 
         if not (debtor.fullname in debtorBal):
-            debtorBal[(debtor.fullname,debtor.username)] = 0
-
+            debtorBal[(debtor.fullname, debtor.username)] = 0
 
         # find payments related to loan_id
         print("!!!!!!!!!!!!! PAYMENT TYPE!!!!!!!!!")
@@ -619,29 +650,30 @@ def get_cumulative_bal_breakdown():
             payment_id = payment.id
 
             # check paymentlender
-            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=user_id).all()
+            paymentlenders = (
+                db.session.query(PaymentLender)
+                .filter_by(payment_id=payment_id, lender_id=user_id)
+                .all()
+            )
             for paymentlender in paymentlenders:
                 if paymentlender.status == "":
                     cumulBal += amortization
-                    debtorBal[(debtor.fullname,debtor.username)] += amortization
+                    debtorBal[(debtor.fullname, debtor.username)] += amortization
                 else:
                     cumulComp += amortization
-                print("Relevant PaymentLenders:", paymentlender.id, "Status:", paymentlender.status)
+                print(
+                    "Relevant PaymentLenders:",
+                    paymentlender.id,
+                    "Status:",
+                    paymentlender.status,
+                )
 
-    
     breakdown = []
 
-    for key,val in debtorBal.items():
-        breakdown.append({
-            "debtor": {
-                "username": key[1],
-                "fullname": key[0]
-            },
-            "cumulativeBal": val
-        })
-    
-
-                
+    for key, val in debtorBal.items():
+        breakdown.append(
+            {"debtor": {"username": key[1], "fullname": key[0]}, "cumulativeBal": val}
+        )
 
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     print("Total CumulBal:", cumulBal)
@@ -679,10 +711,12 @@ def get_personal_transactions_table():
 
         # find payments related to loan_id
         payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
-        
+
         loan = db.session.query(Loan).filter_by(id=loan_id).first()
         earliest = None
-        amortization = (loanlender.contribution*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm)
+        amortization = (
+            loanlender.contribution * (1 + (loan.interest * loan.period))
+        ) / (loan.period * loan.wpm)
 
         debtor = db.session.query(Debtor).filter_by(id=loan.debtor_id).first()
 
@@ -691,7 +725,11 @@ def get_personal_transactions_table():
             payment_id = payment.id
 
             # check paymentlender
-            paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=user_id).all()
+            paymentlenders = (
+                db.session.query(PaymentLender)
+                .filter_by(payment_id=payment_id, lender_id=user_id)
+                .all()
+            )
             for paymentlender in paymentlenders:
                 if paymentlender.status == "":
                     bal += amortization
@@ -699,23 +737,23 @@ def get_personal_transactions_table():
                         earliest = payment.payment_date
                     elif earliest > payment.payment_date:
                         earliest = payment.payment_date
-            
+
         # includes everything, along with all received
         if not earliest:
             earliest = loan.start_period
 
         dat = {
             "loanId": loan_id,
-            "debtor": {
-                "username": debtor.username,
-                "fullname": debtor.fullname
-            },
-            "amortizationPerWithdrawal": int(loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm),
+            "debtor": {"username": debtor.username, "fullname": debtor.fullname},
+            "amortizationPerWithdrawal": int(
+                loan.principal_amt * (1 + (loan.interest * loan.period))
+            )
+            / (loan.period * loan.wpm),
             "balanceAmortization": bal,
             "paymentDate": earliest.strftime(DATE_FORMAT),
         }
 
-        data.append(dat) 
+        data.append(dat)
 
     # get request
     # return error or OK
@@ -731,8 +769,8 @@ def get_others_transactions_table():
 
     user_id = user_info.get("id")
 
-    lenders = db.session.query(Lender).filter(Lender.id!=user_id).all()
-    
+    lenders = db.session.query(Lender).filter(Lender.id != user_id).all()
+
     data = []
 
     for lender in lenders:
@@ -750,7 +788,7 @@ def get_others_transactions_table():
 
             # find payments related to loan_id
             payments = db.session.query(Payment).filter_by(loan_id=loan_id).all()
-            
+
             loan = db.session.query(Loan).filter_by(id=loan_id).first()
             earliest = None
 
@@ -761,7 +799,11 @@ def get_others_transactions_table():
                 payment_id = payment.id
 
                 # check paymentlender
-                paymentlenders = db.session.query(PaymentLender).filter_by(payment_id=payment_id, lender_id=lender_id).all()
+                paymentlenders = (
+                    db.session.query(PaymentLender)
+                    .filter_by(payment_id=payment_id, lender_id=lender_id)
+                    .all()
+                )
                 for paymentlender in paymentlenders:
                     if paymentlender.status == "":
                         bal += contribution
@@ -769,33 +811,30 @@ def get_others_transactions_table():
                             earliest = payment.payment_date
                         elif earliest > payment.payment_date:
                             earliest = payment.payment_date
-                
+
             # includes everything, along with all received
             if not earliest:
                 earliest = loan.start_period
 
             dat = {
                 "loanId": loan_id,
-                "lender": {
-                    "username": username,
-                    "fullname": fullname
-                },
-                "debtor": {
-                    "username": debtor.username,
-                    "fullname": debtor.fullname
-                },
-                "amortizationPerWithdrawal": int(loan.principal_amt*(1+(loan.interest*loan.period)))/(loan.period*loan.wpm),
+                "lender": {"username": username, "fullname": fullname},
+                "debtor": {"username": debtor.username, "fullname": debtor.fullname},
+                "amortizationPerWithdrawal": int(
+                    loan.principal_amt * (1 + (loan.interest * loan.period))
+                )
+                / (loan.period * loan.wpm),
                 "balanceAmortization": bal,
                 "paymentDate": earliest.strftime(DATE_FORMAT),
             }
 
-            data.append(dat) 
+            data.append(dat)
 
     # get request
     # return error or OK
 
     print("!!!!!!!!!!!!!!!FINAL DATA ENDPOINT 11:", data)
-    
+
     return jsonify({"status": "OK", "message": data})
 
 
