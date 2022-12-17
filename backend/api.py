@@ -630,14 +630,14 @@ def get_cumulative_bal_breakdown():
         loan_id = loanlender.loan_id
 
         # for calculating breakdown
-        loan = db.session.scalar(db.select(Loan).filter_by(id=user_id))
+        loan = db.session.scalar(db.select(Loan).filter_by(id=loan_id))
         debtor = db.session.scalar(db.select(Debtor).filter_by(id=loan.debtor_id))
 
         amortization = (
             loanlender.contribution * (1 + (loan.interest * loan.period))
         ) / (loan.period * loan.wpm)
 
-        if not (debtor.fullname in debtorBal):
+        if not ((debtor.fullname, debtor.username) in debtorBal):
             debtorBal[(debtor.fullname, debtor.username)] = 0
 
         # find payments related to loan_id
