@@ -21,7 +21,7 @@ class Debtor(db.Model):
     password = db.Column(db.String(100), nullable=False)
 
     # relationships
-    loans = db.relationship("Loan", back_populates="debtor", cascade="all, delete")
+    loans = db.relationship("Loan", back_populates="debtor", cascade="all, delete", passive_deletes=True)
 
 
 class Lender(db.Model):
@@ -33,7 +33,7 @@ class Lender(db.Model):
 
     # relationships
     loan_lenders = db.relationship(
-        "LoanLender", back_populates="lender", cascade="all, delete"
+        "LoanLender", back_populates="lender", cascade="all, delete", passive_deletes=True
     )
 
     payment_lenders = db.relationship("PaymentLender", back_populates="lender")
@@ -81,10 +81,10 @@ class Loan(db.Model):
     debtor = db.relationship("Debtor", back_populates="loans")
 
     loan_lenders = db.relationship(
-        "LoanLender", back_populates="loan", cascade="all, delete"
+        "LoanLender", back_populates="loan", cascade="all, delete", passive_deletes=True
     )
 
-    payments = db.relationship("Payment", back_populates="loan", cascade="all, delete")
+    payments = db.relationship("Payment", back_populates="loan", cascade="all, delete", passive_deletes=True)
 
 
 class LoanLender(db.Model):
