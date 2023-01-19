@@ -5,13 +5,26 @@ import {
   MdOutlineArrowDropDown,
   MdOutlineExpandMore,
 } from "react-icons/md";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+
 import format from "../format";
 
 function PaymentTable(props) {
   const order = ["period", "paymentDate", "amortization"];
-  const keys = order.concat(
-    props.data[0].status.map((obj, idx) => "Status For " + obj.lender.fullname)
-  );
+
+  if (props.currentUser.userType === "lender") {
+    var keys = order.concat(
+      props.data[0].status.map(
+        (obj, idx) => "Status For " + obj.lender.fullname
+      )
+    );
+  } else {
+    var keys = order.concat("Status");
+    var status = props.data.map((row, idx) =>
+      row.status.every((lender) => lender.received)
+    );
+  }
 
   const [paymentData, setPaymentData] = useState(props.data);
 
@@ -30,28 +43,60 @@ function PaymentTable(props) {
   }
 
   function saveHandler() {
-    const confirmed = window.confirm("Save changes?");
-
-    if (confirmed) {
-      fetch("/api/edit-payment-status", {
-        method: "POST",
-        body: JSON.stringify({
-          loanId: props.loanId,
-          paymentData: paymentData,
-        }),
-        headers: {
-          "Content-Type": "application/json",
+    confirmAlert({
+      title: "Save changes?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () =>
+            fetch("/api/edit-payment-status", {
+              method: "POST",
+              body: JSON.stringify({
+                loanId: props.loanId,
+                paymentData: paymentData,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.status === "OK") {
+                  props.setIsPageOutdated(true);
+                } else {
+                  alert("Error.");
+                }
+              }),
         },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "OK") {
-            props.setIsPageOutdated(true);
-          } else {
-            alert("Error.");
-          }
-        });
-    }
+        {
+          label: "No",
+          onClick: () => {},
+        },
+      ],
+    });
+
+    // const confirmed = window.confirm("Save changes?");
+
+    // if (confirmed) {
+    // fetch("/api/edit-payment-status", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     loanId: props.loanId,
+    //     paymentData: paymentData,
+    //   }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     if (data.status === "OK") {
+    //       props.setIsPageOutdated(true);
+    //     } else {
+    //       alert("Error.");
+    //     }
+    //   });
+    // }
   }
 
   const nameLabels = ["lender", "debtor"];
@@ -122,6 +167,15 @@ function PaymentTable(props) {
                             <option value="-">-</option>
                             <option value="Received">Received</option>
                           </select>
+                        </td>
+                      );
+                    } else if (label === "Status") {
+                      return (
+                        <td
+                          key={"row-" + i + "-col-" + j}
+                          className="w3-center"
+                        >
+                          {status[i] ? "Received" : ""}
                         </td>
                       );
                     } else {

@@ -11,12 +11,20 @@ import Select from "react-select";
 
 import Form from "./ui/Form";
 import AppMetaContext from "../context/app-meta-context";
+import UserAuthContext from "../context/user-auth-context";
 
 function AddLoanForm() {
   const navigate = useNavigate();
 
   const appMetaContext = useContext(AppMetaContext);
-  const [lenderContribPairs, setLenderContribPairs] = useState([]);
+  const userAuthContext = useContext(UserAuthContext);
+  const [lenderContribPairs, setLenderContribPairs] = useState([
+    {
+      lender: userAuthContext.fullname,
+      contribution: 0,
+    },
+  ]);
+
   const [principalAmt, setPrincipalAmt] = useState(0);
 
   const [debtorsList, setDebtorsList] = useState([]);
@@ -35,6 +43,7 @@ function AddLoanForm() {
   const contractSignedRef = useRef();
   const ackReceiptsRef = useRef();
   const otherDocsRef = useRef();
+  const privacyRef = useRef();
 
   function closeHandler() {
     appMetaContext.setIsAddLoanFormOpen(false);
@@ -90,6 +99,21 @@ function AddLoanForm() {
         }
       });
   }, []);
+
+  const privacyList = [
+    {
+      value: "public",
+      label: "Public",
+    },
+    {
+      value: "lenders",
+      label: "All lenders",
+    },
+    {
+      value: "participants",
+      label: "Participants only",
+    },
+  ];
 
   // Note to self: this can still be optimized using an array of Refs instead of event listening
   function editLenderInLenderContribPair(value, idx) {
@@ -193,16 +217,30 @@ function AddLoanForm() {
           onSubmit={submitHandler}
         >
           <div className="w3-row">
-            <label htmlFor="debtor" className="w3-small text-overflow">
-              Debtor <span className="w3-text-red w3-small">*</span>
-            </label>
-            <Select
-              className="icon-btn"
-              options={debtorsList}
-              id="debtor"
-              ref={debtorRef}
-              required={true}
-            />
+            <span className="twothird float-left">
+              <label htmlFor="debtor" className="w3-small text-overflow">
+                Debtor <span className="w3-text-red w3-small">*</span>
+              </label>
+              <Select
+                className="icon-btn"
+                options={debtorsList}
+                id="debtor"
+                ref={debtorRef}
+                required={true}
+              />
+            </span>
+            <span className="third float-left">
+              <label htmlFor="privacy" className="w3-small text-overflow">
+                Privacy <span className="w3-text-red w3-small">*</span>
+              </label>
+              <Select
+                className="icon-btn"
+                options={privacyList}
+                id="privacy"
+                ref={privacyRef}
+                required={false}
+              />
+            </span>
           </div>
           <div className="w3-row icon-cont icon-cont-center w3-center w3-padding w3-small">
             <MdOutlinePeopleAlt />
@@ -236,10 +274,13 @@ function AddLoanForm() {
                     editLenderInLenderContribPair(event, idx);
                   }}
                   required={true}
+                  isDisabled={idx === 0}
                 />
               </span>
               <span className="third float-left">
-                <span className="threequarter float-left">
+                <span
+                  className={"float-left " + (idx === 0 ? "" : "threequarter")}
+                >
                   <input
                     className="w3-input w3-center w3-border"
                     type="number"
@@ -252,13 +293,15 @@ function AddLoanForm() {
                     value={obj.contribution}
                   />
                 </span>
-                <span
-                  className="quarter remove-lender-contrib-pair-btn w3-center icon-btn w3-red w3-hover-pink"
-                  title="Remove entry."
-                  onClick={() => removeLenderContribPair(idx)}
-                >
-                  -
-                </span>
+                {idx !== 0 && (
+                  <span
+                    className="quarter remove-lender-contrib-pair-btn w3-center icon-btn w3-red w3-hover-pink"
+                    title="Remove entry."
+                    onClick={() => removeLenderContribPair(idx)}
+                  >
+                    -
+                  </span>
+                )}
               </span>
             </div>
           ))}
@@ -327,7 +370,7 @@ function AddLoanForm() {
               <input
                 className="w3-input w3-center w3-border"
                 type="number"
-                step="0.01"
+                step="1"
                 required
                 id="withdrawals-per-month"
                 ref={withdrawalsPerMonthRef}

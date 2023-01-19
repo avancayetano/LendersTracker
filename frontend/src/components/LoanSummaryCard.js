@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDelete, MdOutlineStickyNote2 } from "react-icons/md";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 import { Link } from "react-router-dom";
 
 import format from "../format";
@@ -21,27 +23,36 @@ function LoanSummaryCard(props) {
   ];
 
   function deleteHandler() {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this Loan Transaction?"
-    );
-    if (confirmed) {
-      fetch("/api/delete-loan-transaction", {
-        method: "POST",
-        body: JSON.stringify({ loanId: props.data.loanId }),
-        headers: {
-          "Content-Type": "application/json",
+    confirmAlert({
+      title: "Delete loan?",
+      message: "Are you sure you want to delete this Loan Transaction?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () =>
+            fetch("/api/delete-loan-transaction", {
+              method: "POST",
+              body: JSON.stringify({ loanId: props.data.loanId }),
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.status === "OK") {
+                  console.log(data.message);
+                  navigate("/dashboard/transactions");
+                } else {
+                  alert("Error.");
+                }
+              }),
         },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.status === "OK") {
-            console.log(data.message);
-            navigate("/dashboard/transactions");
-          } else {
-            alert("Error.");
-          }
-        });
-    }
+        {
+          label: "No",
+          onClick: () => {},
+        },
+      ],
+    });
   }
 
   const urlLabels = [
@@ -64,7 +75,7 @@ function LoanSummaryCard(props) {
         className={"overflow-hidden w3-display-container w3-row " + props.color}
       >
         <div className="w3-padding w3-left icon-cont icon-cont-center">
-          {!props.clickable && (
+          {!props.clickable ? (
             <>
               <MdOutlineStickyNote2 />
               <span className="margin-left">Loan Summary</span>
@@ -82,6 +93,13 @@ function LoanSummaryCard(props) {
                 </span>
               )}
             </>
+          ) : (
+            <div className="w3-small">
+              <MdOutlineStickyNote2 />
+              <span className="margin-left">
+                {props.data.debtor.fullname}'s Loan
+              </span>
+            </div>
           )}
         </div>
       </div>

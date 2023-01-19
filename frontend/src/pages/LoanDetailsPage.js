@@ -58,7 +58,8 @@ function LoanDetailsPage() {
         <h4 className="icon-cont icon-cont-center">
           <MdOutlineSubject />
           <span className="margin-left text-overflow">
-            Loan {loanId} - Details
+            {loanTransaction.debtor ? loanTransaction.debtor.fullname : ""}'s
+            Loan
           </span>
         </h4>
         {Object.keys(loanTransaction).length > 0 && (
@@ -72,38 +73,39 @@ function LoanDetailsPage() {
             />
           </div>
         )}
-        {lenderBreakdown.length > 0 && (
-          <div className="w3-row">
-            <span className="w3-mobile w3-col s8 m9 l10">
-              <Table
-                icon={MdPeopleOutline}
-                title="Lender Breakdown"
-                data={lenderBreakdown}
-                keys={[
-                  "lender",
-                  "contribution",
-                  "amortizationPerWithdrawal",
-                  "amountAtEnd",
-                  "completedAmortization",
-                  "balanceAmortization",
-                ]}
-                color="w3-blue"
-              />
-            </span>
-            <span className="w3-mobile w3-col s4 m3 l2">
-              <BreakdownChart
-                breakdown={lenderBreakdown.map((obj) => {
-                  return {
-                    label: obj.lender.fullname,
-                    value: obj.contribution,
-                  };
-                })}
-                label=""
-                title="Cumulative Balance Amortization Breakdown"
-              />
-            </span>
-          </div>
-        )}
+        {lenderBreakdown.length > 0 &&
+          userAuthContext.userType === "lender" && (
+            <div className="w3-row">
+              <span className="w3-mobile w3-col s8 m9 l10">
+                <Table
+                  icon={MdPeopleOutline}
+                  title="Lender Breakdown"
+                  data={lenderBreakdown}
+                  keys={[
+                    "lender",
+                    "contribution",
+                    "amortizationPerWithdrawal",
+                    "amountAtEnd",
+                    "completedAmortization",
+                    "balanceAmortization",
+                  ]}
+                  color="w3-blue"
+                />
+              </span>
+              <span className="w3-mobile w3-col s4 m3 l2">
+                <BreakdownChart
+                  breakdown={lenderBreakdown.map((obj) => {
+                    return {
+                      label: obj.lender.fullname,
+                      value: obj.contribution,
+                    };
+                  })}
+                  label=""
+                  title="Cumulative Balance Amortization Breakdown"
+                />
+              </span>
+            </div>
+          )}
 
         {payments.length > 0 && (
           <div className="w3-row">
