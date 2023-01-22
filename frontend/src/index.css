@@ -112,11 +112,11 @@
 
 .animate-left {
   position: relative;
-  animation: animateleft 0.5s;
+  animation: animateleft-1 0.4s;
 }
-@keyframes animateleft {
+@keyframes animateleft-1 {
   from {
-    left: -67%;
+    left: -300px;
     opacity: 0;
   }
   to {
@@ -127,7 +127,7 @@
 
 .animate-left-close {
   position: relative;
-  animation: animateleft-close 0.5s;
+  animation: animateleft-close 0.4s;
 }
 @keyframes animateleft-close {
   from {
@@ -135,11 +135,32 @@
     opacity: 1;
   }
   to {
-    left: -67%;
+    left: -300px;
     opacity: 0;
   }
 }
 
+.middle {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.animate-top-to-center {
+  position: fixed;
+  animation: animatetoptocenter 0.4s;
+}
+@keyframes animatetoptocenter {
+  from {
+    top: 0px;
+    opacity: 0;
+  }
+  to {
+    top: 50%;
+    opacity: 1;
+  }
+}
 .form-max-height-1 {
   max-height: 75%;
   overflow-y: visible;

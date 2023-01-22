@@ -4,7 +4,7 @@ function Form(props) {
   return (
     <div
       className={
-        "w3-col s11 m7 l5 w3-display-middle w3-white " +
+        "middle animate-top-to-center w3-col s11 m7 l5 w3-white " +
         (props.closeHandler
           ? "w3-card form-max-height-2"
           : "form-max-height-1 w3-border w3-hover-shadow w3-round-xlarge")

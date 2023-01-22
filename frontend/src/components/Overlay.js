@@ -4,11 +4,18 @@ import AppMetaContext from "../context/app-meta-context";
 
 function Overlay() {
   const appMetaContext = useContext(AppMetaContext);
-  const show = appMetaContext.isAddLoanFormOpen || appMetaContext.isSideBarOpen;
+  const show =
+    appMetaContext.isAddLoanFormOpen ||
+    appMetaContext.isSideBarOpen ||
+    appMetaContext.isDialogOpen;
 
   function clickHandler(event) {
     event.preventDefault();
+    const isSideBarOpen = appMetaContext.isSideBarOpen;
     appMetaContext.reset();
+    if (isSideBarOpen) {
+      appMetaContext.setIsSideBarClosed(true);
+    }
   }
 
   return (

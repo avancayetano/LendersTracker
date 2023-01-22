@@ -2,7 +2,7 @@ function Dialog(props) {
   return (
     <div
       className={
-        "w3-col s11 m7 l5 w3-display-middle w3-white w3-card form-max-height-2 w3-border w3-hover-shadow w3-round-xlarge"
+        "w3-col s11 m6 l4 w3-white w3-card middle animate-top-to-center w3-border w3-hover-shadow w3-round-xlarge z-2"
       }
     >
       <div className="w3-padding-small">
@@ -18,7 +18,7 @@ function Dialog(props) {
             <div
               key={obj.label}
               onClick={obj.buttonHandler}
-              className="w3-button"
+              className={`w3-round-large w3-btn w3-margin ${obj.color}`}
             >
               {obj.label}
             </div>
