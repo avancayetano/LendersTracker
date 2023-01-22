@@ -278,9 +278,7 @@ function AddLoanForm() {
                 />
               </span>
               <span className="third float-left">
-                <span
-                  className={"float-left " + (idx === 0 ? "" : "threequarter")}
-                >
+                <span className={idx === 0 ? "" : "float-left threequarter"}>
                   <input
                     className="w3-input w3-center w3-border"
                     type="number"

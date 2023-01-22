@@ -8,8 +8,7 @@ function Overlay() {
 
   function clickHandler(event) {
     event.preventDefault();
-    appMetaContext.setIsSideBarOpen(false);
-    appMetaContext.setIsAddLoanFormOpen(false);
+    appMetaContext.reset();
   }
 
   return (

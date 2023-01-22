@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   MdAccountCircle,
@@ -22,16 +22,32 @@ function SideBar() {
   const userAuthContext = useContext(UserAuthContext);
   const appMetaContext = useContext(AppMetaContext);
 
+  const sideBarRef = useRef();
+
+  useEffect(() => {
+    if (!appMetaContext.isSideBarOpen && appMetaContext.isSideBarClosed) {
+      sideBarRef.current.classList.add("animate-left-close");
+      appMetaContext.setIsSideBarClosed(false);
+    }
+  }, [appMetaContext.isSideBarClosed]);
+
   return (
     <>
       <div
         className={
-          "w3-sidebar sidebar w3-col s8 m4 l2 w3-bar-block w3-card w3-animate-left"
+          "w3-sidebar w3-col s8 m4 l2 w3-bar-block w3-card " +
+          (appMetaContext.isSideBarOpen
+            ? " sidebar w3-animate-left"
+            : " sidebar-closed")
         }
+        ref={sideBarRef}
       >
         <div
           className="w3-bar-item icon-btn w3-center w3-hover-light-grey"
-          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+          onClick={() => {
+            appMetaContext.setIsSideBarOpen(false);
+            appMetaContext.setIsSideBarClosed(true);
+          }}
         >
           <div className="icon-cont icon-cont-center w3-padding-small">
             <MdOutlineClose className="w3-large" />
@@ -56,7 +72,10 @@ function SideBar() {
         <Link
           to="/dashboard"
           className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
-          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+          onClick={() => {
+            appMetaContext.setIsSideBarOpen(false);
+            appMetaContext.setIsSideBarClosed(true);
+          }}
         >
           <div className="icon-cont">
             <MdOutlineHome />
@@ -68,6 +87,8 @@ function SideBar() {
             className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
             onClick={() => {
               appMetaContext.setIsSideBarOpen(false);
+              appMetaContext.setIsSideBarClosed(true);
+
               appMetaContext.setIsAddLoanFormOpen(true);
             }}
           >
@@ -80,7 +101,10 @@ function SideBar() {
         <Link
           to="/dashboard/transactions"
           className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
-          onClick={() => appMetaContext.setIsSideBarOpen(false)}
+          onClick={() => {
+            appMetaContext.setIsSideBarOpen(false);
+            appMetaContext.setIsSideBarClosed(true);
+          }}
         >
           <div className="icon-cont">
             <MdOutlineViewStream />
@@ -91,7 +115,10 @@ function SideBar() {
           <Link
             to="/dashboard/others-transactions"
             className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
-            onClick={() => appMetaContext.setIsSideBarOpen(false)}
+            onClick={() => {
+              appMetaContext.setIsSideBarOpen(false);
+              appMetaContext.setIsSideBarClosed(true);
+            }}
           >
             <div className="icon-cont">
               <MdOutlineManageSearch />

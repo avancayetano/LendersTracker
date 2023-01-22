@@ -84,11 +84,60 @@
   width: 300px;
 }
 
+.hidden {
+  display: none;
+}
+
 .sidebar {
   position: fixed;
   top: 0px;
+  left: 0px;
   margin: 0px;
   padding: 0px;
+  height: 100%;
+  width: 200px;
+  background-color: #fff;
+  position: fixed !important;
+  z-index: 1;
+  overflow: auto;
+}
+
+.sidebar-closed {
+  position: fixed;
+  top: 0px;
+  left: -67%;
+  margin: 0px;
+  padding: 0px;
+}
+
+.animate-left {
+  position: relative;
+  animation: animateleft 0.5s;
+}
+@keyframes animateleft {
+  from {
+    left: -67%;
+    opacity: 0;
+  }
+  to {
+    left: 0;
+    opacity: 1;
+  }
+}
+
+.animate-left-close {
+  position: relative;
+  animation: animateleft-close 0.5s;
+}
+@keyframes animateleft-close {
+  from {
+    left: 0;
+    opacity: 1;
+  }
+  to {
+    left: -67%;
+    opacity: 0;
+  }
 }
 
 .form-max-height-1 {

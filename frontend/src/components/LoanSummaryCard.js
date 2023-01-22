@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDelete, MdOutlineStickyNote2 } from "react-icons/md";
-import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css";
 import { Link } from "react-router-dom";
 
 import format from "../format";
@@ -23,36 +21,36 @@ function LoanSummaryCard(props) {
   ];
 
   function deleteHandler() {
-    confirmAlert({
-      title: "Delete loan?",
-      message: "Are you sure you want to delete this Loan Transaction?",
-      buttons: [
-        {
-          label: "Yes",
-          onClick: () =>
-            fetch("/api/delete-loan-transaction", {
-              method: "POST",
-              body: JSON.stringify({ loanId: props.data.loanId }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                if (data.status === "OK") {
-                  console.log(data.message);
-                  navigate("/dashboard/transactions");
-                } else {
-                  alert("Error.");
-                }
-              }),
-        },
-        {
-          label: "No",
-          onClick: () => {},
-        },
-      ],
-    });
+    // confirmAlert({
+    //   title: "Delete loan?",
+    //   message: "Are you sure you want to delete this Loan Transaction?",
+    //   buttons: [
+    //     {
+    //       label: "Yes",
+    //       onClick: () =>
+    //         fetch("/api/delete-loan-transaction", {
+    //           method: "POST",
+    //           body: JSON.stringify({ loanId: props.data.loanId }),
+    //           headers: {
+    //             "Content-Type": "application/json",
+    //           },
+    //         })
+    //           .then((res) => res.json())
+    //           .then((data) => {
+    //             if (data.status === "OK") {
+    //               console.log(data.message);
+    //               navigate("/dashboard/transactions");
+    //             } else {
+    //               alert("Error.");
+    //             }
+    //           }),
+    //     },
+    //     {
+    //       label: "No",
+    //       onClick: () => {},
+    //     },
+    //   ],
+    // });
   }
 
   const urlLabels = [

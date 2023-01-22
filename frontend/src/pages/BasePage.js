@@ -5,6 +5,7 @@ import SideBar from "../components/SideBar";
 import AddLoanForm from "../components/AddLoanForm";
 import NavBar from "../components/NavBar";
 import Overlay from "../components/Overlay";
+import Dialog from "../components/Dialog";
 
 function BasePage(props) {
   const appMetaContext = useContext(AppMetaContext);
@@ -20,7 +21,7 @@ function BasePage(props) {
       </div>
 
       <div className="z-2">
-        {appMetaContext.isSideBarOpen && <SideBar />}
+        {<SideBar />}
         {appMetaContext.isAddLoanFormOpen && <AddLoanForm />}
       </div>
     </>
