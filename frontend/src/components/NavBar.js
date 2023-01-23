@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { MdOutlineMenu } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
@@ -12,7 +13,9 @@ function NavBar() {
     <>
       <div className="w3-bar w3-border w3-white w3-center w3-display-container nav-bar z-1">
         <h3>
-          <b>Lenders' Tracker</b>
+          <Link className="w3-padding no-text-deco" to="/dashboard">
+            <b>Lenders' Tracker</b>
+          </Link>
         </h3>
         {userAuthContext.isAuthenticated && (
           <div

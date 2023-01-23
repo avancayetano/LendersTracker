@@ -168,7 +168,7 @@
 
 .form-max-height-2 {
   max-height: 75%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .text-overflow {
@@ -329,4 +329,8 @@ select {
 .nav-bar {
   position: sticky !important;
   top: 0px;
+}
+
+.profile-pic {
+  font-size: 160px !important;
 }

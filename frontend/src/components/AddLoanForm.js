@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import Form from "./ui/Form";
 import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
+import Overlay from "./Overlay";
 
 function AddLoanForm() {
   const navigate = useNavigate();
@@ -218,10 +219,12 @@ function AddLoanForm() {
 
   return (
     <>
+      <Overlay />
       <Form
         title="Add Loan Transaction."
         icon={MdOutlinePostAdd}
         closeHandler={closeHandler}
+        addtlClassNames="z-3"
       >
         <div className="w3-text-red w3-center w3-small">* Required.</div>
         <form

@@ -15,9 +15,6 @@ function BasePage(props) {
         <NavBar />
         {props.children}
       </div>
-      <div>
-        <Overlay />
-      </div>
 
       <div>
         {<SideBar />}

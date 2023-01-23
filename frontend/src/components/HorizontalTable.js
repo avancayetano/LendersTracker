@@ -3,7 +3,7 @@ import format from "../format";
 // Two column table - a little of a misnomer actually
 function HorizontalTable(props) {
   return (
-    <div className="w3-section loan-summary-max-height w3-border w3-hover-shadow w3-round-xlarge">
+    <div className="w3-section w3-animate-bottom loan-summary-max-height w3-border w3-hover-shadow w3-round-xlarge">
       <div className={"w3-display-container w3-row " + props.color}>
         <div className="w3-padding w3-left icon-cont icon-cont-center">
           <props.icon />

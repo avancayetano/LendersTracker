@@ -10,7 +10,6 @@ import BasePage from "./BasePage";
 function LandingPage(props) {
   const navigate = useNavigate();
   const userAuthContext = useContext(UserAuthContext);
-  const [formType, setFormType] = useState("login");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,11 +32,7 @@ function LandingPage(props) {
   return (
     <BasePage>
       {isLoading && <Loader />}
-      {formType === "login" ? (
-        <LogInForm setFormType={setFormType} />
-      ) : (
-        <RegisterForm setFormType={setFormType} />
-      )}
+      <LogInForm />
     </BasePage>
   );
 }

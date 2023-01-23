@@ -52,7 +52,7 @@ function DashboardPage(props) {
           </p>
         )}
         {Object.keys(balanceAmortizationBreakdown).length > 0 && (
-          <div className="w3-container w3-display-container w3-border w3-padding-16 w3-hover-shadow w3-round-xlarge w3-margin-top">
+          <div className="w3-container w3-display-container  w3-padding-16 w3-margin-top">
             <div className="w3-half">
               <div className="w3-padding-small">
                 <Table

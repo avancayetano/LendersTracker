@@ -73,20 +73,23 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
 
-    session["user_info"] = format_user_info(new_user, user_type)
-    user_info = session.get("user_info")
-    return jsonify({"status": "OK", "message": user_info})
+    # session["user_info"] = format_user_info(new_user, user_type)
+    # user_info = session.get("user_info")
+    return jsonify({"status": "OK"})
 
 
 @app.route("/api/login-user", methods=["POST"])
 def login_user():
     username = request.json["username"]
     password = request.json["password"]
-    user_type = request.json["userType"]
 
-    user = db.session.scalar(
-        db.select(USER_TYPES[user_type]).filter_by(username=username)
-    )
+    for u_type in USER_TYPES:
+        user = db.session.scalar(
+            db.select(USER_TYPES[u_type]).filter_by(username=username)
+        )
+        if user is not None:
+            user_type = u_type
+            break
 
     if user is None:
         return jsonify({"status": "error", "message": "Unauthorized."})

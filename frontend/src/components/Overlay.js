@@ -2,12 +2,8 @@ import { useContext } from "react";
 
 import AppMetaContext from "../context/app-meta-context";
 
-function Overlay() {
+function Overlay(props) {
   const appMetaContext = useContext(AppMetaContext);
-  const show =
-    appMetaContext.isAddLoanFormOpen ||
-    appMetaContext.isSideBarOpen ||
-    appMetaContext.isDialogOpen;
 
   function clickHandler(event) {
     event.preventDefault();
@@ -16,14 +12,15 @@ function Overlay() {
     if (isSideBarOpen) {
       appMetaContext.setIsSideBarClosed(true);
     }
+
+    // Note to self: make everything like this
+    // Instead of relying on context, just pass the close handler of the involved form/dialog/sidebar
+    if (props.closeHandler) {
+      props.closeHandler();
+    }
   }
 
-  return (
-    <div
-      className={"z-1 overlay " + (show ? " w3-show" : " w3-hide")}
-      onClick={clickHandler}
-    ></div>
-  );
+  return <div className={"z-1 overlay "} onClick={clickHandler}></div>;
 }
 
 export default Overlay;

@@ -115,7 +115,7 @@ function PaymentTable(props) {
   return (
     <>
       {isSavePaymentDialogOpen && <SavePaymentDialog />}
-      <div className="w3-border w3-hover-shadow w3-round-xlarge w3-section overflow-hidden">
+      <div className="w3-border w3-animate-bottom w3-hover-shadow w3-round-xlarge w3-section overflow-hidden">
         <div
           className={
             "overflow-hidden w3-display-container w3-row " + props.color

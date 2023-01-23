@@ -11,12 +11,14 @@ import {
   MdOutlinePostAdd,
   MdOutlineManageSearch,
   MdOutlineViewStream,
+  MdOutlinePersonAdd,
 } from "react-icons/md";
 
 import AppMetaContext from "../context/app-meta-context";
 import UserAuthContext from "../context/user-auth-context";
 import LogOutButton from "./LogOutButton";
 import format from "../format";
+import Overlay from "./Overlay";
 
 function SideBar() {
   const userAuthContext = useContext(UserAuthContext);
@@ -33,6 +35,7 @@ function SideBar() {
 
   return (
     <>
+      {appMetaContext.isSideBarOpen && <Overlay />}
       <div
         className={
           "w3-sidebar w3-col s8 m4 l2 w3-bar-block w3-card " +
@@ -53,7 +56,14 @@ function SideBar() {
             <MdOutlineClose className="w3-large" />
           </div>
         </div>
-        <div className="w3-container w3-bar-item w3-center w3-border-top w3-border-bottom w3-padding-16 w3-hover-light-grey icon-btn">
+        <Link
+          to="/dashboard/profile"
+          className="w3-container w3-bar-item w3-center w3-border-top w3-border-bottom w3-padding-16 w3-hover-light-grey icon-btn"
+          onClick={() => {
+            appMetaContext.setIsSideBarOpen(false);
+            appMetaContext.setIsSideBarClosed(true);
+          }}
+        >
           <div className="icon-cont">
             <MdAccountCircle className="w3-jumbo w3-onethird w3-text-brown" />
             <span className="w3-twothird w3-padding-small">
@@ -68,7 +78,7 @@ function SideBar() {
               </div>
             </span>
           </div>
-        </div>
+        </Link>
         <Link
           to="/dashboard"
           className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
@@ -83,20 +93,35 @@ function SideBar() {
           </div>
         </Link>
         {userAuthContext.userType === "lender" && (
-          <div
-            className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
-            onClick={() => {
-              appMetaContext.setIsSideBarOpen(false);
-              appMetaContext.setIsSideBarClosed(true);
+          <>
+            <div
+              className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
+              onClick={() => {
+                appMetaContext.setIsSideBarOpen(false);
+                appMetaContext.setIsSideBarClosed(true);
 
-              appMetaContext.setIsAddLoanFormOpen(true);
-            }}
-          >
-            <div className="icon-cont full-height">
-              <MdOutlinePostAdd />
-              <span className="margin-left">Add Loan Transaction</span>
+                appMetaContext.setIsAddLoanFormOpen(true);
+              }}
+            >
+              <div className="icon-cont full-height">
+                <MdOutlinePostAdd />
+                <span className="margin-left">Add Loan Transaction</span>
+              </div>
             </div>
-          </div>
+            <Link
+              to="/dashboard/register"
+              className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
+              onClick={() => {
+                appMetaContext.setIsSideBarOpen(false);
+                appMetaContext.setIsSideBarClosed(true);
+              }}
+            >
+              <div className="icon-cont">
+                <MdOutlinePersonAdd />
+                <span className="margin-left">Register an Account</span>
+              </div>
+            </Link>
+          </>
         )}
         <Link
           to="/dashboard/transactions"

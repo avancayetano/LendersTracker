@@ -104,7 +104,7 @@ function LoanSummaryCard(props) {
       {isDeleteDialogOpen && <DeleteLoanDialog />}
       <div
         className={
-          "w3-border w3-hover-shadow w3-round-xlarge w3-section loan-summary-max-height " +
+          "w3-border w3-animate-bottom w3-hover-shadow w3-round-xlarge w3-section loan-summary-max-height " +
           (props.clickable ? " clickable" : "")
         }
       >

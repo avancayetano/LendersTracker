@@ -1,12 +1,15 @@
-import { useRef } from "react";
+import { useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { MdOutlinePersonOutline } from "react-icons/md";
 import Select from "react-select";
+import toast from "react-hot-toast";
 
 import Form from "./ui/Form";
+import UserAuthContext from "../context/user-auth-context";
 
 function RegisterForm(props) {
   const navigate = useNavigate();
+  const userAuthContext = useContext(UserAuthContext);
 
   const fullnameInputRef = useRef();
   const usernameInputRef = useRef();
@@ -14,10 +17,14 @@ function RegisterForm(props) {
   const confirmPasswordRef = useRef();
   const userTypeInputRef = useRef();
 
-  const userTypeOptions = [
-    { value: "lender", label: "Lender" },
-    { value: "debtor", label: "Debtor" },
-  ];
+  const userTypeOptions =
+    userAuthContext.userType === "lender"
+      ? [{ value: "debtor", label: "Debtor" }]
+      : [
+          { value: "lender", label: "Lender" },
+          { value: "debtor", label: "Debtor" },
+        ];
+
   function submitHandler(event) {
     event.preventDefault();
 
@@ -29,28 +36,40 @@ function RegisterForm(props) {
       userType: userTypeInputRef.current.getValue()[0].value,
     };
 
-    fetch("/api/register-user", {
-      method: "POST",
-      body: JSON.stringify(content),
-      headers: {
-        "Content-Type": "application/json",
+    toast.promise(
+      fetch("/api/register-user", {
+        method: "POST",
+        body: JSON.stringify(content),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            navigate("/dashboard");
+          } else {
+            alert(data.message ? data.message : "Unauthorized. Please log in.");
+          }
+        }),
+      {
+        loading: "Creating account...",
+        success: <b>Account created!</b>,
+        error: <b>Could not create account.</b>,
       },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "OK") {
-          navigate("/dashboard");
-        } else {
-          alert(data.message ? data.message : "Unauthorized. Please log in.");
-        }
-      });
+      {
+        success: {
+          duration: 5000,
+        },
+      }
+    );
   }
 
   return (
     <Form title="Create an account." icon={MdOutlinePersonOutline}>
       <form
         autoComplete="off"
-        className="w3-container w3-center"
+        className="w3-container w3-center w3-margin"
         onSubmit={submitHandler}
       >
         <p>
@@ -106,15 +125,6 @@ function RegisterForm(props) {
           </div>
         </div>
       </form>
-      <p className="w3-center">
-        <span>Already have an account? </span>
-        <button
-          className="w3-btn w3-border"
-          onClick={() => props.setFormType("login")}
-        >
-          Log in instead.
-        </button>
-      </p>
     </Form>
   );
 }

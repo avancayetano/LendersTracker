@@ -10,12 +10,6 @@ function LogInForm(props) {
 
   const usernameInputRef = useRef();
   const passwordInputRef = useRef();
-  const userTypeInputRef = useRef();
-
-  const userTypeOptions = [
-    { value: "lender", label: "Lender" },
-    { value: "debtor", label: "Debtor" },
-  ];
 
   function submitHandler(event) {
     event.preventDefault();
@@ -23,7 +17,6 @@ function LogInForm(props) {
     const content = {
       username: usernameInputRef.current.value,
       password: passwordInputRef.current.value,
-      userType: userTypeInputRef.current.getValue()[0].value,
     };
 
     fetch("/api/login-user", {
@@ -72,27 +65,11 @@ function LogInForm(props) {
         </p>
 
         <div>
-          <div className="w3-half w3-padding-small">
-            <Select
-              options={userTypeOptions}
-              defaultValue={userTypeOptions[0]}
-              ref={userTypeInputRef}
-            />
-          </div>
-          <div className="w3-half w3-padding-small">
+          <div className="w3-margin">
             <button className="w3-btn w3-black">Log In</button>
           </div>
         </div>
       </form>
-      <p className="w3-center">
-        <span>Don't have an account yet? </span>
-        <button
-          className="w3-btn w3-border"
-          onClick={() => props.setFormType("register")}
-        >
-          Register instead.
-        </button>
-      </p>
     </Form>
   );
 }

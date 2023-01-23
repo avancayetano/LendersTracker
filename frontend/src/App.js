@@ -10,6 +10,8 @@ import { AppMetaContextProvider } from "./context/app-meta-context";
 import OthersTransactionsPage from "./pages/OthersTransactionsPage";
 import LoanTransactionsPage from "./pages/LoanTransactionsPage";
 import LoanDetailsPage from "./pages/LoanDetailsPage";
+import ProfilePage from "./pages/ProfilePage";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
@@ -27,6 +29,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/dashboard/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/register"
+              element={
+                <ProtectedRoute>
+                  <RegisterPage />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/dashboard/transactions"
               element={
