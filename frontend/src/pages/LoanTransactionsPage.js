@@ -5,20 +5,33 @@ import { MdOutlineAttachMoney, MdOutlineViewStream } from "react-icons/md";
 import LoanSummaryCard from "../components/LoanSummaryCard";
 import BasePage from "./BasePage";
 import UserAuthContext from "../context/user-auth-context";
+import AppMetaContext from "../context/app-meta-context";
 
 function LoanTransactionsPage() {
   const [loanTransactions, setLoanTransactions] = useState([]);
 
   const userAuthContext = useContext(UserAuthContext);
+  const appMetaContext = useContext(AppMetaContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchData = () => {
     fetch(`/api/get-${userAuthContext.userType}-loan-transactions/`)
       .then((res) => res.json())
       .then((data) => {
         setLoanTransactions([...data.message]);
       });
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    if (appMetaContext.addedNewLoan) {
+      appMetaContext.setAddedNewLoan(false);
+      fetchData();
+    }
+  }, [appMetaContext.addedNewLoan]);
 
   const colors = [
     "w3-purple",

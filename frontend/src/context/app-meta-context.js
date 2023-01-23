@@ -5,10 +5,12 @@ const AppMetaContext = createContext({
   isSideBarClosed: false,
   isAddLoanFormOpen: false,
   isDialogOpen: false,
+  addedNewLoan: false,
   setIsSideBarOpen: () => {},
   setIsSideBarClosed: () => {},
   setIsAddLoanFormOpen: () => {},
   setIsDialogOpen: () => {},
+  setAddedNewLoan: () => {},
   reset: () => {},
 });
 
@@ -17,12 +19,14 @@ export function AppMetaContextProvider(props) {
   const [isSideBarClosed, setIsSideBarClosed] = useState(false);
   const [isAddLoanFormOpen, setIsAddLoanFormOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [addedNewLoan, setAddedNewLoan] = useState(false);
 
   function reset() {
     setIsSideBarOpen(false);
     setIsSideBarClosed(false);
     setIsAddLoanFormOpen(false);
     setIsDialogOpen(false);
+    setAddedNewLoan(false);
   }
 
   const context = {
@@ -34,6 +38,8 @@ export function AppMetaContextProvider(props) {
     setIsAddLoanFormOpen,
     isDialogOpen,
     setIsDialogOpen,
+    addedNewLoan,
+    setAddedNewLoan,
     reset,
   };
 

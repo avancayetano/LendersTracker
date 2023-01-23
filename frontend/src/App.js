@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import LandingPage from "./pages/LandingPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -13,6 +14,7 @@ import LoanDetailsPage from "./pages/LoanDetailsPage";
 function App() {
   return (
     <>
+      <Toaster position="bottom-right" reverseOrder={false} />
       <UserAuthContextProvider>
         <AppMetaContextProvider>
           <Routes>

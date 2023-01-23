@@ -211,6 +211,9 @@
 .z-2 {
   z-index: 2;
 }
+.z-3 {
+  z-index: 3;
+}
 
 th,
 td {
@@ -321,4 +324,9 @@ select {
     #ffffff 1.1px,
     #ffffff
   );
+}
+
+.nav-bar {
+  position: sticky !important;
+  top: 0px;
 }

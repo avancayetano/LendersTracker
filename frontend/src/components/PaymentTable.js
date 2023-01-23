@@ -5,8 +5,7 @@ import {
   MdOutlineArrowDropDown,
   MdOutlineExpandMore,
 } from "react-icons/md";
-import { confirmAlert } from "react-confirm-alert";
-import "react-confirm-alert/src/react-confirm-alert.css";
+import toast from "react-hot-toast";
 
 import Dialog from "./Dialog";
 import format from "../format";
@@ -49,24 +48,36 @@ function PaymentTable(props) {
   const [isSavePaymentDialogOpen, setIsSavePaymentDialogOpen] = useState(false);
 
   function savePayment() {
-    fetch("/api/edit-payment-status", {
-      method: "POST",
-      body: JSON.stringify({
-        loanId: props.loanId,
-        paymentData: paymentData,
-      }),
-      headers: {
-        "Content-Type": "application/json",
+    toast.promise(
+      fetch("/api/edit-payment-status", {
+        method: "POST",
+        body: JSON.stringify({
+          loanId: props.loanId,
+          paymentData: paymentData,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            props.setIsPageOutdated(true);
+          } else {
+            alert("Error.");
+          }
+        }),
+      {
+        loading: "Saving...",
+        success: <b>Changes saved!</b>,
+        error: <b>Could not save changes.</b>,
       },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "OK") {
-          props.setIsPageOutdated(true);
-        } else {
-          alert("Error.");
-        }
-      });
+      {
+        success: {
+          duration: 5000,
+        },
+      }
+    );
     setIsSavePaymentDialogOpen(false);
     appMetaContext.reset();
   }

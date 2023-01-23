@@ -20,7 +20,7 @@ function Overlay() {
 
   return (
     <div
-      className={"overlay " + (show ? " w3-show" : " w3-hide")}
+      className={"z-1 overlay " + (show ? " w3-show" : " w3-hide")}
       onClick={clickHandler}
     ></div>
   );

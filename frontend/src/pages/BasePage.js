@@ -11,15 +11,15 @@ function BasePage(props) {
 
   return (
     <>
-      <div className="z-0">
+      <div>
         <NavBar />
         {props.children}
       </div>
-      <div className="z-1">
+      <div>
         <Overlay />
       </div>
 
-      <div className="z-2">
+      <div>
         {<SideBar />}
         {appMetaContext.isAddLoanFormOpen && <AddLoanForm />}
       </div>

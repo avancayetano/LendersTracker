@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Dialog from "./Dialog";
 import format from "../format";
 import AppMetaContext from "../context/app-meta-context";
+import toast from "react-hot-toast";
 
 function LoanSummaryCard(props) {
   const navigate = useNavigate();
@@ -28,22 +29,35 @@ function LoanSummaryCard(props) {
   ];
 
   function deleteLoan() {
-    fetch("/api/delete-loan-transaction", {
-      method: "POST",
-      body: JSON.stringify({ loanId: props.data.loanId }),
-      headers: {
-        "Content-Type": "application/json",
+    toast.promise(
+      fetch("/api/delete-loan-transaction", {
+        method: "POST",
+        body: JSON.stringify({ loanId: props.data.loanId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            console.log(data.message);
+            navigate("/dashboard/transactions");
+          } else {
+            alert("Error.");
+          }
+        }),
+      {
+        loading: "Deleting...",
+        success: <b>Successfully deleted loan!</b>,
+        error: <b>Could not delete loan.</b>,
       },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "OK") {
-          console.log(data.message);
-          navigate("/dashboard/transactions");
-        } else {
-          alert("Error.");
-        }
-      });
+      {
+        success: {
+          duration: 5000,
+        },
+      }
+    );
+
     setIsDeleteDialogOpen(false);
     appMetaContext.reset();
   }

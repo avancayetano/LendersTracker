@@ -8,6 +8,7 @@ import {
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import toast from "react-hot-toast";
 
 import Form from "./ui/Form";
 import AppMetaContext from "../context/app-meta-context";
@@ -186,19 +187,31 @@ function AddLoanForm() {
 
     formData.append("inputs", JSON.stringify(content));
 
-    fetch("/api/add-loan-transaction", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "OK") {
-          navigate("/dashboard/transactions");
-          navigate(0);
-        } else {
-          alert(data.message ? data.message : "Error.");
-        }
-      });
+    toast.promise(
+      fetch("/api/add-loan-transaction", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            appMetaContext.setAddedNewLoan(true);
+            navigate("/dashboard/transactions");
+          } else {
+            alert(data.message ? data.message : "Error.");
+          }
+        }),
+      {
+        loading: "Adding loan transaction...",
+        success: <b>Loan transaction added!</b>,
+        error: <b>Could not add loan transaction.</b>,
+      },
+      {
+        success: {
+          duration: 5000,
+        },
+      }
+    );
 
     closeHandler();
   }

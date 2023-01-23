@@ -10,7 +10,7 @@ function NavBar() {
 
   return (
     <>
-      <div className="w3-bar w3-border w3-white w3-center w3-display-container">
+      <div className="w3-bar w3-border w3-white w3-center w3-display-container nav-bar z-1">
         <h3>
           <b>Lenders' Tracker</b>
         </h3>
