@@ -13,9 +13,13 @@ function NavBar() {
     <>
       <div className="w3-bar w3-border w3-white w3-center w3-display-container nav-bar z-1">
         <h3>
-          <Link className="w3-padding no-text-deco" to="/dashboard">
+          {userAuthContext.isAuthenticated ? (
+            <Link className="w3-padding no-text-deco" to="/dashboard">
+              <b>Lenders' Tracker</b>
+            </Link>
+          ) : (
             <b>Lenders' Tracker</b>
-          </Link>
+          )}
         </h3>
         {userAuthContext.isAuthenticated && (
           <div

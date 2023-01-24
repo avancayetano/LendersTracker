@@ -315,7 +315,7 @@ def get_lender_loan_transactions(loan_id):
 
             txn = {
                 "loanId": loan.id,
-                "status": "Ongoing" if ongoing else "Done",
+                "status": "ongoing" if ongoing else "done",
                 "debtor": {
                     "username": loan.debtor.username,
                     "fullname": loan.debtor.fullname,
@@ -839,6 +839,32 @@ def get_others_transactions_table():
     print("!!!!!!!!!!!!!!!FINAL DATA ENDPOINT 11:", data)
 
     return jsonify({"status": "OK", "message": data})
+
+
+@app.route("/api/get-members", methods=["GET"])
+def get_members():
+    sample_members = [
+        {"name": "Avan Theadmin", "userType": "admin"},
+        {"name": "Lender Name 1", "userType": "lender"},
+        {"name": "Lender Name 2", "userType": "lender"},
+        {"name": "Lender Name 3", "userType": "lender"},
+        {"name": "Lender Name 4", "userType": "lender"},
+        {"name": "Debtor Name 1", "userType": "debtor"},
+        {"name": "Debtor Name 2", "userType": "debtor"},
+        {"name": "Debtor Name 3", "userType": "debtor"},
+        {"name": "Debtor Name 4", "userType": "debtor"},
+    ]
+    return jsonify({"status": "OK", "message": sample_members})
+
+
+@app.route("/api/get-upcoming-debtor-payments", methods=["GET"])
+def get_upcoming_debtor_payments():
+    sample_upcoming_payments = [
+        {"loanId": 1, "date": "Some date string here", "amount": 5000},
+        {"loanId": 2, "date": "Some date string here", "amount": 15000},
+        {"loanId": 3, "date": "Some date string here", "amount": 3000},
+    ]
+    return jsonify({"status": "OK", "message": sample_upcoming_payments})
 
 
 @app.route("/api/logout-user", methods=["POST"])

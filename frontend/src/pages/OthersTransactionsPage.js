@@ -40,7 +40,7 @@ function OthersTransactionsPage() {
               "balanceAmortization",
               "paymentDate",
             ]}
-            color="w3-blue"
+            color="w3-brown"
           />
         )}
       </div>

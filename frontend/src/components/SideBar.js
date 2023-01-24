@@ -12,6 +12,7 @@ import {
   MdOutlineManageSearch,
   MdOutlineViewStream,
   MdOutlinePersonAdd,
+  MdOutlineGroups,
 } from "react-icons/md";
 
 import AppMetaContext from "../context/app-meta-context";
@@ -65,7 +66,7 @@ function SideBar() {
           }}
         >
           <div className="icon-cont">
-            <MdAccountCircle className="w3-jumbo w3-onethird w3-text-brown" />
+            <MdAccountCircle className="w3-jumbo w3-onethird w3-text-blue" />
             <span className="w3-twothird w3-padding-small">
               <div className="w3-large w3-left-align">
                 {userAuthContext.fullname}
@@ -123,6 +124,19 @@ function SideBar() {
             </Link>
           </>
         )}
+        <Link
+          to="/dashboard/members"
+          className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"
+          onClick={() => {
+            appMetaContext.setIsSideBarOpen(false);
+            appMetaContext.setIsSideBarClosed(true);
+          }}
+        >
+          <div className="icon-cont">
+            <MdOutlineGroups />
+            <span className="margin-left">View Members</span>
+          </div>
+        </Link>
         <Link
           to="/dashboard/transactions"
           className="w3-bar-item icon-btn w3-hover-light-grey w3-padding-large no-text-deco"

@@ -59,7 +59,7 @@ function LoanDetailsPage() {
           <MdOutlineSubject />
           <span className="margin-left text-overflow">
             {loanTransaction.debtor ? loanTransaction.debtor.fullname : ""}'s
-            Loan
+            Loan {`(ID: ${loanTransaction.loanId})`}
           </span>
         </h4>
         {Object.keys(loanTransaction).length > 0 && (

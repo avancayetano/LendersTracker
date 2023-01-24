@@ -5,7 +5,7 @@ import format from "../format";
 function Table(props) {
   const [sortBy, setSortBy] = useState(props.keys[0]);
   const [isAscending, setIsAscending] = useState(true);
-  const [data, setData] = useState(props.data);
+  const [data, setData] = useState([...props.data]);
 
   function sortHandler(label) {
     if (sortBy === label) {
@@ -28,6 +28,10 @@ function Table(props) {
       })
     );
   }, [sortBy, isAscending]);
+
+  useEffect(() => {
+    setData([...props.data]);
+  }, [props.data]);
 
   const nameLabels = ["lender", "debtor"];
 

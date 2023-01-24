@@ -8,6 +8,10 @@ const transform = {
   receiptDateAlt: "Date Expected To Receive",
 };
 
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function format(value, isLabel = false, isUrl = false) {
   if (isUrl) {
     return `/display/${value}`;
@@ -18,7 +22,9 @@ function format(value, isLabel = false, isUrl = false) {
           p1 ? x.toUpperCase() : ` ${x}`
         );
   } else {
-    return typeof value === "number" ? value.toLocaleString() : value;
+    return typeof value === "number"
+      ? value.toLocaleString()
+      : capitalize(value);
   }
 }
 

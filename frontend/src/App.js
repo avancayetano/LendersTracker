@@ -12,6 +12,7 @@ import LoanTransactionsPage from "./pages/LoanTransactionsPage";
 import LoanDetailsPage from "./pages/LoanDetailsPage";
 import ProfilePage from "./pages/ProfilePage";
 import RegisterPage from "./pages/RegisterPage";
+import MembersPage from "./pages/MembersPage";
 
 function App() {
   return (
@@ -45,7 +46,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/dashboard/members"
+              element={
+                <ProtectedRoute>
+                  <MembersPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard/transactions"
               element={

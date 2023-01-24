@@ -16,7 +16,7 @@ function LoanSummaryCard(props) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const keys = [
-    ["loanId", "status", "debtor", "principalAmount"],
+    ["debtor", "status", "privacy", "principalAmount"],
     ["interest", "period", "withdrawalsPerMonth", "amortizationPerWithdrawal"],
     [
       "amountAtEnd",
@@ -27,6 +27,8 @@ function LoanSummaryCard(props) {
     ["proofOfTransfer", "lwt", "startPeriod", "endPeriod"],
     ["suretyDebtor", "contractSigned", "ackReceipts", "otherDocs"],
   ];
+
+  props.data.privacy = "public"; // since no backend for this yet...
 
   function deleteLoan() {
     toast.promise(
@@ -143,6 +145,7 @@ function LoanSummaryCard(props) {
                 <span className="margin-left">
                   {props.data.debtor.fullname}'s Loan
                 </span>
+                <span className="margin-left">{`(ID: ${props.data.loanId})`}</span>
               </div>
             )}
           </div>

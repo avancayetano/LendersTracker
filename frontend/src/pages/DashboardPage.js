@@ -19,6 +19,8 @@ function DashboardPage(props) {
 
   const [tableData, setTableData] = useState([]);
 
+  const [upcomingPayments, setUpcomingPayments] = useState([]);
+
   useEffect(() => {
     if (userAuthContext.userType === "lender") {
       fetch("/api/get-cumulative-bal-breakdown")
@@ -32,6 +34,12 @@ function DashboardPage(props) {
         .then((data) => {
           setTableData([...data.message]);
         });
+    } else if (userAuthContext.userType === "debtor") {
+      fetch("/api/get-upcoming-debtor-payments")
+        .then((res) => res.json())
+        .then((data) => {
+          setUpcomingPayments(data.message);
+        });
     }
   }, []);
 
@@ -44,12 +52,21 @@ function DashboardPage(props) {
         </h4>
         <h4>Welcome, {userAuthContext.fullname}!</h4>
         {userAuthContext.userType === "debtor" && (
-          <p>
-            View your{" "}
-            <Link to="/dashboard/transactions" className="w3-text-blue link">
-              personal transactions.
-            </Link>
-          </p>
+          <>
+            <p>
+              View your{" "}
+              <Link to="/dashboard/transactions" className="w3-text-blue link">
+                personal transactions.
+              </Link>
+            </p>
+            <Table
+              icon={MdOutlineTableRows}
+              title="Upcoming Payments"
+              data={upcomingPayments}
+              keys={["loanId", "date", "amount"]}
+              color="w3-green"
+            />
+          </>
         )}
         {Object.keys(balanceAmortizationBreakdown).length > 0 && (
           <div className="w3-container w3-display-container  w3-padding-16 w3-margin-top">
